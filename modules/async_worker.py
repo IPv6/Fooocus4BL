@@ -137,7 +137,7 @@ def worker():
     def handler(async_task):
         execution_start_time = time.perf_counter()
         async_task.processing = True
-
+        print(f'Starting generation...')
         args = async_task.args
         args.reverse()
 
@@ -339,8 +339,20 @@ def worker():
         controlnet_cpds_path = None
         clip_vision_path, ip_negative_path, ip_adapter_path, ip_adapter_face_path = None, None, None, None
 
+        # Fooocus4BL
+        controlnet_adepth_path = None #cn_adepth
+        controlnet_arecolor_path = None #cn_arecolor
+        controlnet_alight_path = None #cn_alight
+        controlnet_acanny_path = None #cn_acanny
+        controlnet_asketch_path = None #cn_asketch
+        controlnet_acanny_path = None #cn_acanny
+        controlnet_asedge_path = None #cn_asedge
+
+        
         seed = int(image_seed)
         print(f'[Parameters] Seed = {seed}')
+        print(f'[Parameters] PP = {prompt}')
+        print(f'[Parameters] NP = {negative_prompt}')
 
         goals = []
         tasks = []
@@ -414,6 +426,21 @@ def worker():
                     controlnet_canny_path = modules.config.downloading_controlnet_canny()
                 if len(cn_tasks[flags.cn_cpds]) > 0:
                     controlnet_cpds_path = modules.config.downloading_controlnet_cpds()
+
+                # Fooocus4BL
+                if len(cn_tasks[flags.cn_adepth]) > 0:
+                    controlnet_adepth_path = modules.config.downloading_controlnet_adepth()
+                if len(cn_tasks[flags.cn_arecolor]) > 0:
+                    controlnet_arecolor_path = modules.config.downloading_controlnet_arecolor()
+                if len(cn_tasks[flags.cn_alight]) > 0:
+                    controlnet_alight_path = modules.config.downloading_controlnet_alight()
+                if len(cn_tasks[flags.cn_acanny]) > 0:
+                    controlnet_acanny_path = modules.config.downloading_controlnet_canny()
+                if len(cn_tasks[flags.cn_asketch]) > 0:
+                    controlnet_asketch_path = modules.config.downloading_controlnet_asketch()
+                if len(cn_tasks[flags.cn_asedge]) > 0:
+                    controlnet_asedge_path = modules.config.downloading_controlnet_asedge()
+
                 if len(cn_tasks[flags.cn_ip]) > 0:
                     clip_vision_path, ip_negative_path, ip_adapter_path = modules.config.downloading_ip_adapters('ip')
                 if len(cn_tasks[flags.cn_ip_face]) > 0:
@@ -422,7 +449,7 @@ def worker():
                 progressbar(async_task, 1, 'Loading control models ...')
 
         # Load or unload CNs
-        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path])
+        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [controlnet_adepth_path, controlnet_arecolor_path, controlnet_alight_path, controlnet_acanny_path, controlnet_asketch_path, controlnet_asedge_path]) # Fooocus4BL
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_path)
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_face_path)
 
@@ -531,12 +558,13 @@ def worker():
                 for i, t in enumerate(tasks):
                     progressbar(async_task, 4, f'Preparing Fooocus text #{i + 1} ...')
                     expansion = pipeline.final_expansion(t['task_prompt'], t['task_seed'])
-                    print(f'[Prompt Expansion] {expansion}')
+                    # print(f'[Prompt Expansion] {expansion}')
                     t['expansion'] = expansion
                     t['positive'] = copy.deepcopy(t['positive']) + [expansion]  # Deep copy.
 
             for i, t in enumerate(tasks):
                 progressbar(async_task, 5, f'Encoding positive #{i + 1} ...')
+                print(f'[Prompt] Final PP:', t['positive'])
                 t['c'] = pipeline.clip_encode(texts=t['positive'], pool_top_k=t['positive_top_k'])
 
             for i, t in enumerate(tasks):
@@ -544,6 +572,7 @@ def worker():
                     t['uc'] = pipeline.clone_cond(t['c'])
                 else:
                     progressbar(async_task, 6, f'Encoding negative #{i + 1} ...')
+                    print(f'[Prompt] Final NP:', t['negative'])
                     t['uc'] = pipeline.clip_encode(texts=t['negative'], pool_top_k=t['negative_top_k'])
 
         if len(goals) > 0:
@@ -766,6 +795,50 @@ def worker():
                 if debugging_cn_preprocessor:
                     yield_result(async_task, cn_img, black_out_nsfw, do_not_show_finished_images=True)
                     return
+            
+            # Fooocus4BL
+            for task in cn_tasks[flags.cn_adepth]:
+                cn_img, cn_stop, cn_weight = task
+                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                cn_img = HWC3(cn_img)
+                task[0] = core.numpy_to_pytorch(cn_img)
+            for task in cn_tasks[flags.cn_arecolor]:
+                cn_img, cn_stop, cn_weight = task
+                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                cn_img = HWC3(cn_img)
+                task[0] = core.numpy_to_pytorch(cn_img)
+            for task in cn_tasks[flags.cn_alight]:
+                cn_img, cn_stop, cn_weight = task
+                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                cn_img = HWC3(cn_img)
+                task[0] = core.numpy_to_pytorch(cn_img)
+            for task in cn_tasks[flags.cn_acanny]:
+                cn_img, cn_stop, cn_weight = task
+                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                cn_img = HWC3(cn_img)
+                task[0] = core.numpy_to_pytorch(cn_img)
+            for task in cn_tasks[flags.cn_asketch]:
+                cn_img, cn_stop, cn_weight = task
+                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                cn_img = HWC3(cn_img)
+                task[0] = core.numpy_to_pytorch(cn_img)
+            for task in cn_tasks[flags.cn_asedge]:
+                cn_img, cn_stop, cn_weight = task
+                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                cn_img = HWC3(cn_img)
+                task[0] = core.numpy_to_pytorch(cn_img)
+
+            # for task in cn_tasks[flags.cn_anormal]:
+            #     cn_img, cn_stop, cn_weight = task
+            #     cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+            #     # if not skipping_cn_preprocessor: # no preprocessor, ogl normal as is
+            #     #     cn_img = preprocessors.???(cn_img)
+            #     cn_img = HWC3(cn_img)
+            #     task[0] = core.numpy_to_pytorch(cn_img)
+            #     if debugging_cn_preprocessor:
+            #         yield_result(async_task, cn_img, do_not_show_finished_images=True)
+            #         return
+
             for task in cn_tasks[flags.cn_ip]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = HWC3(cn_img)
@@ -777,6 +850,7 @@ def worker():
                 if debugging_cn_preprocessor:
                     yield_result(async_task, cn_img, black_out_nsfw, do_not_show_finished_images=True)
                     return
+                print(f'CN condition: [cn_ip] sa:{cn_stop} w:{cn_weight}')
             for task in cn_tasks[flags.cn_ip_face]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = HWC3(cn_img)
@@ -791,7 +865,7 @@ def worker():
                 if debugging_cn_preprocessor:
                     yield_result(async_task, cn_img, black_out_nsfw, do_not_show_finished_images=True)
                     return
-
+                print(f'CN condition: [cn_ip_face] sa:{cn_stop} w:{cn_weight}')
             all_ip_tasks = cn_tasks[flags.cn_ip] + cn_tasks[flags.cn_ip_face]
 
             if len(all_ip_tasks) > 0:
@@ -859,9 +933,21 @@ def worker():
                 if 'cn' in goals:
                     for cn_flag, cn_path in [
                         (flags.cn_canny, controlnet_canny_path),
-                        (flags.cn_cpds, controlnet_cpds_path)
+                        (flags.cn_cpds, controlnet_cpds_path),
+                        
+                        # Fooocus4BL
+                        (flags.cn_adepth, controlnet_adepth_path), #cn_adepth
+                        (flags.cn_arecolor, controlnet_arecolor_path), #cn_arecolor
+                        (flags.cn_alight, controlnet_alight_path), #cn_alight
+                        (flags.cn_acanny, controlnet_acanny_path), #cn_acanny
+                        (flags.cn_asketch, controlnet_asketch_path), #cn_asketch
+                        (flags.cn_asedge, controlnet_asedge_path), #cn_asedge
                     ]:
                         for cn_img, cn_stop, cn_weight in cn_tasks[cn_flag]:
+                            if cn_path not in pipeline.loaded_ControlNets:
+                                print(f'ControlNet {cn_flag}-{cn_path} failed to load, skipping')
+                                continue
+                            print(f'CN condition: {cn_flag} sa:{cn_stop} w:{cn_weight}')
                             positive_cond, negative_cond = core.apply_controlnet(
                                 positive_cond, negative_cond,
                                 pipeline.loaded_ControlNets[cn_path], cn_img, cn_weight, 0, cn_stop)
