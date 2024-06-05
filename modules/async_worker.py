@@ -418,6 +418,14 @@ def worker():
                         else:
                             prompt = inpaint_additional_prompt + '\n' + prompt
                     goals.append('inpaint')
+
+                    # Fooocus4BL: sanity check (vary+inpaint goals lead to tensor size mismatch)
+                    if ('vary' in goals) or ('upscale' in goals):
+                        print(f'[Inpaint] removing Vary/Upscale goals (due active inpainting)')
+                        if ('vary' in goals):
+                            goals.remove('vary')
+                        if ('upscale' in goals):
+                            goals.remove('upscale')
             if current_tab == 'ip' or \
                     mixing_image_prompt_and_vary_upscale or \
                     mixing_image_prompt_and_inpaint:
@@ -722,14 +730,16 @@ def worker():
                              do_not_show_finished_images=True)
                 return
 
+            # Fooocus4BL
+            if len(outpaint_selections) == 0:
+                controlnet_inpaint_lrtb = inpaint_worker.current_task.interested_area
+                print(f'Inpainting: CN clipping: mask shape = {inpaint_mask.shape}/{inpaint_worker.current_task.interested_mask.shape}, clip zone = {controlnet_inpaint_lrtb}.')
+
             progressbar(async_task, 11, 'VAE Inpaint encoding ...')
 
             inpaint_pixel_fill = core.numpy_to_pytorch(inpaint_worker.current_task.interested_fill)
             inpaint_pixel_image = core.numpy_to_pytorch(inpaint_worker.current_task.interested_image)
             inpaint_pixel_mask = core.numpy_to_pytorch(inpaint_worker.current_task.interested_mask)
-
-            # Fooocus4BL
-            controlnet_inpaint_lrtb = inpaint_worker.current_task.interested_area
 
             candidate_vae, candidate_vae_swap = pipeline.get_candidate_vae(
                 steps=steps,
@@ -804,44 +814,56 @@ def worker():
             for task in cn_tasks[flags.cn_adepth]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                if controlnet_inpaint_lrtb is not None:
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img2 = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
+                    print(f'CN condition: [cn_adepth] clipping due inpainting: {cn_img.shape} -> {cn_img2.shape}')
+                    cn_img2 = cn_img
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_arecolor]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                if controlnet_inpaint_lrtb is not None:
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img2 = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
+                    print(f'CN condition: [cn_arecolor] clipping due inpainting: {cn_img.shape} -> {cn_img2.shape}')
+                    cn_img2 = cn_img
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_alight]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                if controlnet_inpaint_lrtb is not None:
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img2 = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
+                    print(f'CN condition: [cn_alight] clipping due inpainting: {cn_img.shape} -> {cn_img2.shape}')
+                    cn_img2 = cn_img
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_acanny]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                if controlnet_inpaint_lrtb is not None:
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img2 = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
+                    print(f'CN condition: [cn_acanny] clipping due inpainting: {cn_img.shape} -> {cn_img2.shape}')
+                    cn_img2 = cn_img
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_asketch]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                if controlnet_inpaint_lrtb is not None:
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img2 = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
+                    print(f'CN condition: [cn_asketch] clipping due inpainting: {cn_img.shape} -> {cn_img2.shape}')
+                    cn_img2 = cn_img
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_asedge]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                if controlnet_inpaint_lrtb is not None:
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img2 = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
+                    print(f'CN condition: [cn_asedge] clipping due inpainting: {cn_img.shape} -> {cn_img2.shape}')
+                    cn_img2 = cn_img
                 task[0] = core.numpy_to_pytorch(cn_img)
 
             for task in cn_tasks[flags.cn_ip]:
