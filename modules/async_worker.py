@@ -347,6 +347,7 @@ def worker():
         controlnet_asketch_path = None #cn_asketch
         controlnet_acanny_path = None #cn_acanny
         controlnet_asedge_path = None #cn_asedge
+        controlnet_inpaint_lrtb = None
 
         
         seed = int(image_seed)
@@ -727,6 +728,9 @@ def worker():
             inpaint_pixel_image = core.numpy_to_pytorch(inpaint_worker.current_task.interested_image)
             inpaint_pixel_mask = core.numpy_to_pytorch(inpaint_worker.current_task.interested_mask)
 
+            # Fooocus4BL
+            controlnet_inpaint_lrtb = inpaint_worker.current_task.interested_area
+
             candidate_vae, candidate_vae_swap = pipeline.get_candidate_vae(
                 steps=steps,
                 switch=switch,
@@ -800,44 +804,45 @@ def worker():
             for task in cn_tasks[flags.cn_adepth]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_arecolor]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_alight]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_acanny]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_asketch]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
                 task[0] = core.numpy_to_pytorch(cn_img)
             for task in cn_tasks[flags.cn_asedge]:
                 cn_img, cn_stop, cn_weight = task
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                if controlnet_inpaint_lrtb is not None:
+                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                 cn_img = HWC3(cn_img)
                 task[0] = core.numpy_to_pytorch(cn_img)
-
-            # for task in cn_tasks[flags.cn_anormal]:
-            #     cn_img, cn_stop, cn_weight = task
-            #     cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-            #     # if not skipping_cn_preprocessor: # no preprocessor, ogl normal as is
-            #     #     cn_img = preprocessors.???(cn_img)
-            #     cn_img = HWC3(cn_img)
-            #     task[0] = core.numpy_to_pytorch(cn_img)
-            #     if debugging_cn_preprocessor:
-            #         yield_result(async_task, cn_img, do_not_show_finished_images=True)
-            #         return
 
             for task in cn_tasks[flags.cn_ip]:
                 cn_img, cn_stop, cn_weight = task

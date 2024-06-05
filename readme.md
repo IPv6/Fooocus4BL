@@ -3,10 +3,14 @@
 * Fooocus4BL: [Fooocus](https://github.com/lllyasviel/Fooocus) with some additions
 
 * Extra ControNets:
-  - ADepth. Input: Depth map (BW), without preprocessing
+  - ADepth. Input: Depth map (BW)
   - ARecolor. Input: BW photo
   - ALight. Input: BW emissions map
 
-  - ACanny. Input: BW 1px lines, PyraCanny without preprocessing
+  - ACanny. Input: BW 1px lines (PyraCanny model)
   - ASketch. Input: BW scribble
-  - ASEdge. Input: BW edges/lines, https://github.com/TheMistoAI/MistoLine
+  - ASEdge. Input: BW edges/lines (MistoLine model)
+
+* Extra ControNets specifics:
+  - inputs are not preprocessed
+  - in case of inpaint inputs automatically clipped to inpainting zone
