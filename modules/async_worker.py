@@ -339,7 +339,7 @@ def worker():
         controlnet_cpds_path = None
         clip_vision_path, ip_negative_path, ip_adapter_path, ip_adapter_face_path = None, None, None, None
 
-        # Fooocus4BL
+        # Fooocus4BL: extra-CNs
         controlnet_adepth_path = None #cn_adepth
         controlnet_arecolor_path = None #cn_arecolor
         controlnet_alight_path = None #cn_alight
@@ -437,7 +437,7 @@ def worker():
                 if len(cn_tasks[flags.cn_cpds]) > 0:
                     controlnet_cpds_path = modules.config.downloading_controlnet_cpds()
 
-                # Fooocus4BL
+                # Fooocus4BL: extra-CNs model preloading
                 if len(cn_tasks[flags.cn_adepth]) > 0:
                     controlnet_adepth_path = modules.config.downloading_controlnet_adepth()
                 if len(cn_tasks[flags.cn_arecolor]) > 0:
@@ -459,7 +459,7 @@ def worker():
                 progressbar(async_task, 1, 'Loading control models ...')
 
         # Load or unload CNs
-        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [controlnet_adepth_path, controlnet_arecolor_path, controlnet_alight_path, controlnet_acanny_path, controlnet_asketch_path, controlnet_asedge_path]) # Fooocus4BL
+        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [controlnet_adepth_path, controlnet_arecolor_path, controlnet_alight_path, controlnet_acanny_path, controlnet_asketch_path, controlnet_asedge_path]) # Fooocus4BL: refreshing with extra-CNs
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_path)
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_face_path)
 
@@ -733,7 +733,7 @@ def worker():
                              do_not_show_finished_images=True)
                 return
 
-            # Fooocus4BL
+            # Fooocus4BL: extra-CNs: setup clipping to match inpainting
             if len(outpaint_selections) == 0:
                 controlnet_inpaint_refmasksh = inpaint_mask.shape
                 controlnet_inpaint_lrtb = inpaint_worker.current_task.interested_area
@@ -814,10 +814,10 @@ def worker():
                     yield_result(async_task, cn_img, black_out_nsfw, do_not_show_finished_images=True)
                     return
             
-            # Fooocus4BL
+            # Fooocus4BL: extra-CNs task preparation
             for task in cn_tasks[flags.cn_adepth]:
                 cn_img, cn_stop, cn_weight = task
-                if controlnet_inpaint_lrtb is not None:# Fooocus4BL
+                if controlnet_inpaint_lrtb is not None:
                     if cn_img.shape[0]!=controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=controlnet_inpaint_refmasksh[1]:
                         print(f'CN condition: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {controlnet_inpaint_refmasksh}')
                     cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
@@ -983,7 +983,7 @@ def worker():
                         (flags.cn_canny, controlnet_canny_path),
                         (flags.cn_cpds, controlnet_cpds_path),
                         
-                        # Fooocus4BL
+                        # Fooocus4BL: extra-CNs conditioning
                         (flags.cn_adepth, controlnet_adepth_path), #cn_adepth
                         (flags.cn_arecolor, controlnet_arecolor_path), #cn_arecolor
                         (flags.cn_alight, controlnet_alight_path), #cn_alight
@@ -992,6 +992,7 @@ def worker():
                         (flags.cn_asedge, controlnet_asedge_path), #cn_asedge
                     ]:
                         for cn_img, cn_stop, cn_weight in cn_tasks[cn_flag]:
+                            # Fooocus4BL: sanity check
                             print(f'CN condition: {cn_flag} sa:{cn_stop} w:{cn_weight} img:{cn_img.shape}')
                             if (cn_stop<0.001) or (cn_weight<0.001) or (cn_path not in pipeline.loaded_ControlNets):
                                 print(f'// {cn_flag}: zero influence, skipping')

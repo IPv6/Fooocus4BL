@@ -1,6 +1,6 @@
 # Fooocus4BL
 
-* Fooocus4BL: [Fooocus](https://github.com/lllyasviel/Fooocus) with some additions
+* Fooocus4BL: [Fooocus](https://github.com/lllyasviel/Fooocus) with extra-CNs
 
 * Extra ControNets:
   - ADepth. Input: BW Depth map (far = black)
