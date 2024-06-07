@@ -344,7 +344,7 @@ def worker():
         controlnet_arecolor_path = None #cn_arecolor
         controlnet_alight_path = None #cn_alight
         controlnet_acanny_path = None #cn_acanny
-        controlnet_asketch_path = None #cn_asketch
+        # controlnet_asketch_path = None #cn_asketch
         controlnet_acanny_path = None #cn_acanny
         controlnet_asedge_path = None #cn_asedge
         controlnet_inpaint_lrtb = None
@@ -446,8 +446,8 @@ def worker():
                     controlnet_alight_path = modules.config.downloading_controlnet_alight()
                 if len(cn_tasks[flags.cn_acanny]) > 0:
                     controlnet_acanny_path = modules.config.downloading_controlnet_canny()
-                if len(cn_tasks[flags.cn_asketch]) > 0:
-                    controlnet_asketch_path = modules.config.downloading_controlnet_asketch()
+                # if len(cn_tasks[flags.cn_asketch]) > 0:
+                #     controlnet_asketch_path = modules.config.downloading_controlnet_asketch()
                 if len(cn_tasks[flags.cn_asedge]) > 0:
                     controlnet_asedge_path = modules.config.downloading_controlnet_asedge()
 
@@ -459,7 +459,7 @@ def worker():
                 progressbar(async_task, 1, 'Loading control models ...')
 
         # Load or unload CNs
-        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [controlnet_adepth_path, controlnet_arecolor_path, controlnet_alight_path, controlnet_acanny_path, controlnet_asketch_path, controlnet_asedge_path]) # Fooocus4BL: refreshing with extra-CNs
+        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [controlnet_adepth_path, controlnet_arecolor_path, controlnet_alight_path, controlnet_acanny_path, controlnet_asedge_path]) # Fooocus4BL: refreshing with extra-CNs
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_path)
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_face_path)
 
@@ -815,60 +815,18 @@ def worker():
                     return
             
             # Fooocus4BL: extra-CNs task preparation
-            for task in cn_tasks[flags.cn_adepth]:
-                cn_img, cn_stop, cn_weight = task
-                if controlnet_inpaint_lrtb is not None:
-                    if cn_img.shape[0]!=controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=controlnet_inpaint_refmasksh[1]:
-                        print(f'CN condition: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {controlnet_inpaint_refmasksh}')
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
-                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                cn_img = HWC3(cn_img)
-                task[0] = core.numpy_to_pytorch(cn_img)
-            for task in cn_tasks[flags.cn_arecolor]:
-                cn_img, cn_stop, cn_weight = task
-                if controlnet_inpaint_lrtb is not None:
-                    if cn_img.shape[0]!=controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=controlnet_inpaint_refmasksh[1]:
-                        print(f'CN condition: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {controlnet_inpaint_refmasksh}')
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
-                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                cn_img = HWC3(cn_img)
-                task[0] = core.numpy_to_pytorch(cn_img)
-            for task in cn_tasks[flags.cn_alight]:
-                cn_img, cn_stop, cn_weight = task
-                if controlnet_inpaint_lrtb is not None:
-                    if cn_img.shape[0]!=controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=controlnet_inpaint_refmasksh[1]:
-                        print(f'CN condition: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {controlnet_inpaint_refmasksh}')
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
-                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                cn_img = HWC3(cn_img)
-                task[0] = core.numpy_to_pytorch(cn_img)
-            for task in cn_tasks[flags.cn_acanny]:
-                cn_img, cn_stop, cn_weight = task
-                if controlnet_inpaint_lrtb is not None:
-                    if cn_img.shape[0]!=controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=controlnet_inpaint_refmasksh[1]:
-                        print(f'CN condition: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {controlnet_inpaint_refmasksh}')
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
-                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                cn_img = HWC3(cn_img)
-                task[0] = core.numpy_to_pytorch(cn_img)
-            for task in cn_tasks[flags.cn_asketch]:
-                cn_img, cn_stop, cn_weight = task
-                if controlnet_inpaint_lrtb is not None:
-                    if cn_img.shape[0]!=controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=controlnet_inpaint_refmasksh[1]:
-                        print(f'CN condition: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {controlnet_inpaint_refmasksh}')
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
-                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                cn_img = HWC3(cn_img)
-                task[0] = core.numpy_to_pytorch(cn_img)
-            for task in cn_tasks[flags.cn_asedge]:
-                cn_img, cn_stop, cn_weight = task
-                if controlnet_inpaint_lrtb is not None:
-                    if cn_img.shape[0]!=controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=controlnet_inpaint_refmasksh[1]:
-                        print(f'CN condition: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {controlnet_inpaint_refmasksh}')
-                    cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
-                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
-                cn_img = HWC3(cn_img)
-                task[0] = core.numpy_to_pytorch(cn_img)
+            for cn_flag in (flags.cn_adepth, flags.cn_arecolor, flags.cn_alight, flags.cn_acanny, flags.cn_asedge):
+                for task in cn_tasks[cn_flag]:
+                    cn_img, cn_stop, cn_weight = task
+                    if controlnet_inpaint_lrtb is not None:
+                        if cn_img.shape[0]!=controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=controlnet_inpaint_refmasksh[1]:
+                            print(f'CN condition: {cn_flag}: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {controlnet_inpaint_refmasksh}')
+                        else:
+                            print(f'CN condition: {cn_flag}: clipping for inpaint: {controlnet_inpaint_lrtb}')
+                        cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
+                    cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                    cn_img = HWC3(cn_img)
+                    task[0] = core.numpy_to_pytorch(cn_img)
 
             for task in cn_tasks[flags.cn_ip]:
                 cn_img, cn_stop, cn_weight = task
@@ -988,12 +946,12 @@ def worker():
                         (flags.cn_arecolor, controlnet_arecolor_path), #cn_arecolor
                         (flags.cn_alight, controlnet_alight_path), #cn_alight
                         (flags.cn_acanny, controlnet_acanny_path), #cn_acanny
-                        (flags.cn_asketch, controlnet_asketch_path), #cn_asketch
+                        # (flags.cn_asketch, controlnet_asketch_path), #cn_asketch
                         (flags.cn_asedge, controlnet_asedge_path), #cn_asedge
                     ]:
                         for cn_img, cn_stop, cn_weight in cn_tasks[cn_flag]:
                             # Fooocus4BL: sanity check
-                            print(f'CN condition: {cn_flag} sa:{cn_stop} w:{cn_weight} img:{cn_img.shape}')
+                            print(f'CN condition: {cn_flag}: sa:{cn_stop} w:{cn_weight} img:{cn_img.shape}')
                             if (cn_stop<0.001) or (cn_weight<0.001) or (cn_path not in pipeline.loaded_ControlNets):
                                 print(f'// {cn_flag}: zero influence, skipping')
                                 continue

@@ -8,7 +8,6 @@
   - ALight. Input: BW emissions map
 
   - ACanny. Input: BW edges/lines (PyraCanny model, 1px white lines)
-  - ASketch. Input: BW scribble (white lines)
   - ASEdge. Input: BW edges/lines (MistoLine model, white lines)
 
 * Extra ControNets specifics:

@@ -77,14 +77,13 @@ cn_adepth = "ADepth"
 cn_arecolor = "ARecolor"
 cn_alight = "ALight"
 cn_acanny = "ACanny"
-cn_asketch = "ASketch"
+# cn_asketch = "ASketch"
 cn_asedge = "ASEdge"
-ip_list = [cn_ip, cn_canny, cn_cpds, cn_adepth, cn_arecolor, cn_alight, cn_acanny, cn_asketch, cn_asedge, cn_ip_face]
+ip_list = [cn_ip, cn_canny, cn_cpds, cn_adepth, cn_arecolor, cn_alight, cn_acanny, cn_asedge, cn_ip_face]
 default_parameters[cn_adepth] = (0.8, 1.0)
 default_parameters[cn_arecolor] = (0.8, 0.8)
 default_parameters[cn_alight] = (0.5, 0.5)
 default_parameters[cn_acanny] = (0.7, 1.0)
-default_parameters[cn_asketch] = (0.5, 1.0)
 default_parameters[cn_asedge] = (0.5, 1.0)
 
 
