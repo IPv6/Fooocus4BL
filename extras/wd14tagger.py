@@ -27,6 +27,10 @@ global_csv = None
 def default_interrogator(image_rgb, threshold=0.35, character_threshold=0.85, exclude_tags=""):
     global global_model, global_csv
 
+    # Fooocys4BL: sanity check
+    if image_rgb is None:
+        return "(no image)"
+    
     model_name = "wd-v1-4-moat-tagger-v2"
 
     model_onnx_filename = load_file_from_url(
