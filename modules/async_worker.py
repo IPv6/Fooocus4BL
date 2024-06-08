@@ -821,8 +821,8 @@ def worker():
                     if controlnet_inpaint_lrtb is not None:
                         if cn_img.shape[0]!=controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=controlnet_inpaint_refmasksh[1]:
                             print(f'CN condition: {cn_flag}: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {controlnet_inpaint_refmasksh}')
-                        else:
-                            print(f'CN condition: {cn_flag}: clipping for inpaint: {controlnet_inpaint_lrtb}')
+                        # else:
+                        #     print(f'CN condition: {cn_flag}: clipping for inpaint: {controlnet_inpaint_lrtb}')
                         cn_img = cn_img[controlnet_inpaint_lrtb[0]:controlnet_inpaint_lrtb[1], controlnet_inpaint_lrtb[2]:controlnet_inpaint_lrtb[3]]
                     cn_img = resize_image(HWC3(cn_img), width=width, height=height)
                     cn_img = HWC3(cn_img)
