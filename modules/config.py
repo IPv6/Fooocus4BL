@@ -700,12 +700,13 @@ def downloading_controlnet_cpds():
 def downloading_controlnet_adepth(): # Fooocus4BL: model preloading cn_adepth
     load_file_from_url(
         # ??? 'https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/kohya_controllllite_xl_depth_anime.safetensors' # LLLite: unsupported format
-        url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_depth_full.safetensors', # -- 1 best for following depth details
         # url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/sai_xl_depth_256lora.safetensors', # -- 2 good
         # url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_diffusers_xl_depth_midas.safetensors', # -- 3 ok
         # url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_diffusers_xl_depth_zoe.safetensors', # -- 4 ok
         # url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank128/control-lora-depth-rank128.safetensors', # -- 5 good
         # url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank256/control-lora-depth-rank256.safetensors', # -- 6 same as 5
+        # ??? https://huggingface.co/SargeZT/controlnet-sd-xl-1.0-depth-16bit-zoe
+        url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_depth_full.safetensors', # -- 1 best for following depth details
         model_dir=path_controlnet,
         file_name=None
     )
@@ -730,9 +731,10 @@ def downloading_controlnet_alight(): # Fooocus4BL: model preloading cn_alight
 #     load_file_from_url(
 #         # ??? https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_xl_sketch.safetensors
 #         # ??? https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_diffusers_xl_lineart.safetensors
-#         # url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank128/control-lora-sketch-rank128-metadata.safetensors',
+#         # ??? url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank128/control-lora-sketch-rank128-metadata.safetensors',
+#         # xxx url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_diffusers_xl_sketch.safetensors',
+#         # ??? https://huggingface.co/xinsir/anime-painter - specifically anime sketches
 #         url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/sai_xl_sketch_256lora.safetensors',
-#         # url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_diffusers_xl_sketch.safetensors',
 #         model_dir=path_controlnet,
 #         file_name=None
 #     )
