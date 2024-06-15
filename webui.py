@@ -743,6 +743,9 @@ with shared.gradio_root:
                 break
 
         def trigger_describe(mode, img):
+            # Fooocys4BL: sanity check
+            if img is None:
+                return "(no image)", ["Fooocus V2"]
             if mode == flags.desc_type_photo:
                 from extras.interrogate import default_interrogator as default_interrogator_photo
                 return default_interrogator_photo(img), ["Fooocus V2", "Fooocus Enhance", "Fooocus Sharp"]
