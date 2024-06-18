@@ -702,14 +702,16 @@ def downloading_controlnet_adepth(useFull): # Fooocus4BL: model preloading cn_ad
     # ??? 'https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/kohya_controllllite_xl_depth_anime.safetensors' # LLLite: unsupported format
     # ??? https://huggingface.co/SargeZT/controlnet-sd-xl-1.0-depth-16bit-zoe
     model_url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank256/control-lora-depth-rank256.safetensors' # same as 128... same as lllyasviel/sai
+    model_name='control_sdxl_depth_small.safetensors'
     if useFull:
         model_url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_depth_full.safetensors' # -- 1 best for following depth details. But huge (2.5Gb)
+        model_name='control_sdxl_depth_full.safetensors'
     load_file_from_url(
         url=model_url,
         model_dir=path_controlnet,
-        file_name='control_sdxl_depth_full.safetensors'
+        file_name=model_name
     )
-    return os.path.join(path_controlnet, 'control_sdxl_depth_full.safetensors')
+    return os.path.join(path_controlnet, model_name)
 def downloading_controlnet_arecolor(): # Fooocus4BL: model preloading cn_arecolor
     load_file_from_url(
         url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank128/control-lora-recolor-rank128.safetensors', # == sai_xl_recolor_128lora.safetensors

@@ -461,7 +461,7 @@ def worker():
                 progressbar(async_task, 1, 'Loading control models ...')
 
         # Load or unload CNs
-        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [controlnet_adepth_path, controlnet_arecolor_path, controlnet_alight_path, controlnet_acanny_path, controlnet_asedge_path]) # Fooocus4BL: refreshing with extra-CNs
+        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [controlnet_adepthF_path, controlnet_adepthS_path, controlnet_arecolor_path, controlnet_alightQ_path, controlnet_alightS_path, controlnet_acanny_path, controlnet_asedge_path]) # Fooocus4BL: refreshing with extra-CNs
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_path)
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_face_path)
 
