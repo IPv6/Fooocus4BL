@@ -704,7 +704,7 @@ def downloading_controlnet_adepth(useFull): # Fooocus4BL: model preloading cn_ad
     model_url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank256/control-lora-depth-rank256.safetensors' # same as 128... same as lllyasviel/sai
     model_name='control_sdxl_depth_small.safetensors'
     if useFull:
-        model_url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_depth_full.safetensors' # -- 1 best for following depth details. But huge (2.5Gb)
+        model_url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_depth_full.safetensors' # 2.5Gb # -- 1 best for following depth details. But huge
         model_name='control_sdxl_depth_full.safetensors'
     load_file_from_url(
         url=model_url,
@@ -722,9 +722,9 @@ def downloading_controlnet_arecolor(): # Fooocus4BL: model preloading cn_arecolo
 def downloading_controlnet_alight(): # Fooocus4BL: model preloading cn_alightQ
     load_file_from_url(
         # ??? https://huggingface.co/Nacholmo/qr-pattern-sdxl-ControlNet-LLLite # LLLite: unsupported format
-        # url='https://huggingface.co/monster-labs/control_v1p_sdxl_qrcode_monster/resolve/main/diffusion_pytorch_model.safetensors',
-        # url='https://huggingface.co/Nacholmo/controlnet-qr-pattern-sdxl/resolve/main/diffusion_pytorch_model.safetensors', # same as monster-labs
-        url='https://huggingface.co/r3gm/controlnet-qr-pattern-sdxl-fp16/resolve/main/diffusion_pytorch_model.fp16.safetensors',
+        # url='https://huggingface.co/monster-labs/control_v1p_sdxl_qrcode_monster/resolve/main/diffusion_pytorch_model.safetensors', # 5Gb
+        # url='https://huggingface.co/Nacholmo/controlnet-qr-pattern-sdxl/resolve/main/diffusion_pytorch_model.safetensors', # 5Gb # same as monster-labs
+        url='https://huggingface.co/r3gm/controlnet-qr-pattern-sdxl-fp16/resolve/main/diffusion_pytorch_model.fp16.safetensors',  # 2.3Gb
         model_dir=path_controlnet,
         file_name='control_sdxl_qrcode_monster.safetensors'
     )
