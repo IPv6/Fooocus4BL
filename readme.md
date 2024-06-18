@@ -3,9 +3,11 @@
 * Fooocus4BL: [Fooocus](https://github.com/lllyasviel/Fooocus) with extra-CNs
 
 * Extra ControNets:
-  - ADepth. Input: BW Depth map (far = black)
-  - ARecolor. Input: Color photo
-  - ALight. Input: BW emissions map
+  - ADepthF. Input: BW Depth map (far = black), Full model (2.5Gb)
+  - ADepthS. Input: BW Depth map (far = black), Lora 256
+  - ARecolor. Input: Colored map
+  - ALightQ. Input: BW contrast map
+  - ALightC. Input: BW contrast map (CPDS model)
 
   - ACanny. Input: BW edges/lines (PyraCanny model, 1px white lines)
   - ASEdge. Input: BW edges/lines (MistoLine model, white lines)

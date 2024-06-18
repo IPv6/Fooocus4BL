@@ -340,11 +340,11 @@ def worker():
         clip_vision_path, ip_negative_path, ip_adapter_path, ip_adapter_face_path = None, None, None, None
 
         # Fooocus4BL: extra-CNs
-        controlnet_adepth_path = None #cn_adepth
+        controlnet_adepthF_path = None #cn_adepthF
+        controlnet_adepthS_path = None #cn_adepthS
         controlnet_arecolor_path = None #cn_arecolor
-        controlnet_alight_path = None #cn_alight
-        controlnet_acanny_path = None #cn_acanny
-        # controlnet_asketch_path = None #cn_asketch
+        controlnet_alightQ_path = None #cn_alightQ
+        controlnet_alightC_path = None #cn_alightC
         controlnet_acanny_path = None #cn_acanny
         controlnet_asedge_path = None #cn_asedge
         controlnet_inpaint_lrtb = None
@@ -438,16 +438,18 @@ def worker():
                     controlnet_cpds_path = modules.config.downloading_controlnet_cpds()
 
                 # Fooocus4BL: extra-CNs model preloading
-                if len(cn_tasks[flags.cn_adepth]) > 0:
-                    controlnet_adepth_path = modules.config.downloading_controlnet_adepth()
+                if len(cn_tasks[flags.cn_adepthF]) > 0:
+                    controlnet_adepthF_path = modules.config.downloading_controlnet_adepth(True)
+                if len(cn_tasks[flags.cn_adepthS]) > 0:
+                    controlnet_adepthS_path = modules.config.downloading_controlnet_adepth(False)
                 if len(cn_tasks[flags.cn_arecolor]) > 0:
                     controlnet_arecolor_path = modules.config.downloading_controlnet_arecolor()
-                if len(cn_tasks[flags.cn_alight]) > 0:
-                    controlnet_alight_path = modules.config.downloading_controlnet_alight()
+                if len(cn_tasks[flags.cn_alightQ]) > 0:
+                    controlnet_alightQ_path = modules.config.downloading_controlnet_alight()
+                if len(cn_tasks[flags.cn_alightC]) > 0:
+                    controlnet_alightC_path = modules.config.downloading_controlnet_cpds()
                 if len(cn_tasks[flags.cn_acanny]) > 0:
                     controlnet_acanny_path = modules.config.downloading_controlnet_canny()
-                # if len(cn_tasks[flags.cn_asketch]) > 0:
-                #     controlnet_asketch_path = modules.config.downloading_controlnet_asketch()
                 if len(cn_tasks[flags.cn_asedge]) > 0:
                     controlnet_asedge_path = modules.config.downloading_controlnet_asedge()
 
@@ -815,7 +817,7 @@ def worker():
                     return
             
             # Fooocus4BL: extra-CNs task preparation
-            for cn_flag in (flags.cn_adepth, flags.cn_arecolor, flags.cn_alight, flags.cn_acanny, flags.cn_asedge):
+            for cn_flag in (flags.cn_adepthF, flags.cn_adepthS, flags.cn_arecolor, flags.cn_alightQ, flags.cn_alightC, flags.cn_acanny, flags.cn_asedge):
                 for task in cn_tasks[cn_flag]:
                     cn_img, cn_stop, cn_weight = task
                     if controlnet_inpaint_lrtb is not None:
@@ -942,11 +944,12 @@ def worker():
                         (flags.cn_cpds, controlnet_cpds_path),
                         
                         # Fooocus4BL: extra-CNs conditioning
-                        (flags.cn_adepth, controlnet_adepth_path), #cn_adepth
+                        (flags.cn_adepthF, controlnet_adepthF_path), #cn_adepthF
+                        (flags.cn_adepthS, controlnet_adepthS_path), #cn_adepthS
                         (flags.cn_arecolor, controlnet_arecolor_path), #cn_arecolor
-                        (flags.cn_alight, controlnet_alight_path), #cn_alight
+                        (flags.cn_alightQ, controlnet_alightQ_path), #cn_alightQ
+                        (flags.cn_alightC, controlnet_alightC_path), #cn_alightC
                         (flags.cn_acanny, controlnet_acanny_path), #cn_acanny
-                        # (flags.cn_asketch, controlnet_asketch_path), #cn_asketch
                         (flags.cn_asedge, controlnet_asedge_path), #cn_asedge
                     ]:
                         for cn_img, cn_stop, cn_weight in cn_tasks[cn_flag]:
