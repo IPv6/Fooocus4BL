@@ -700,11 +700,13 @@ def downloading_controlnet_cpds():
 # Extra-CNs
 def downloading_controlnet_adepth(useFull): # Fooocus4BL: model preloading cn_adepthF cn_adepthS
     # ??? 'https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/kohya_controllllite_xl_depth_anime.safetensors' # LLLite: unsupported format
-    # ??? https://huggingface.co/SargeZT/controlnet-sd-xl-1.0-depth-16bit-zoe
-    model_url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank256/control-lora-depth-rank256.safetensors' # same as 128... same as lllyasviel/sai
+    # model_url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank256/control-lora-depth-rank256.safetensors' # 774Mb ==128==lllyasviel/sai. Sppradic blotches WTF
+    # model_url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_diffusers_xl_depth_zoe.safetensors', # 158Mb ???
+    # model_url='https://huggingface.co/SargeZT/controlnet-sd-xl-1.0-depth-16bit-zoe/resolve/main/depth-zoe-xl-v1.0-controlnet.safetensors' # 5.0Gb
+    model_url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_diffusers_xl_depth_midas.safetensors' # 158Mb
     model_name='control_sdxl_depth_small.safetensors'
     if useFull:
-        model_url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_depth_full.safetensors' # 2.5Gb # -- 1 best for following depth details. But huge
+        model_url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_depth_full.safetensors' # 2.5Gb # best for following depth details. But huge
         model_name='control_sdxl_depth_full.safetensors'
     load_file_from_url(
         url=model_url,
