@@ -346,7 +346,7 @@ def worker():
         controlnet_alightQ_path = None #cn_alightQ
         controlnet_alightC_path = None #cn_alightC
         controlnet_acanny_path = None #cn_acanny
-        controlnet_asedge_path = None #cn_asedge
+        controlnet_alinea_path = None #cn_alinea
         controlnet_inpaint_lrtb = None
         controlnet_inpaint_refmasksh = None
 
@@ -450,8 +450,8 @@ def worker():
                     controlnet_alightC_path = modules.config.downloading_controlnet_cpds()
                 if len(cn_tasks[flags.cn_acanny]) > 0:
                     controlnet_acanny_path = modules.config.downloading_controlnet_canny()
-                if len(cn_tasks[flags.cn_asedge]) > 0:
-                    controlnet_asedge_path = modules.config.downloading_controlnet_asedge()
+                if len(cn_tasks[flags.cn_alinea]) > 0:
+                    controlnet_alinea_path = modules.config.downloading_controlnet_alinea()
 
                 if len(cn_tasks[flags.cn_ip]) > 0:
                     clip_vision_path, ip_negative_path, ip_adapter_path = modules.config.downloading_ip_adapters('ip')
@@ -461,7 +461,7 @@ def worker():
                 progressbar(async_task, 1, 'Loading control models ...')
 
         # Load or unload CNs
-        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [controlnet_adepthF_path, controlnet_adepthS_path, controlnet_arecolor_path, controlnet_alightQ_path, controlnet_alightC_path, controlnet_acanny_path, controlnet_asedge_path]) # Fooocus4BL: refreshing with extra-CNs
+        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [controlnet_adepthF_path, controlnet_adepthS_path, controlnet_arecolor_path, controlnet_alightQ_path, controlnet_alightC_path, controlnet_acanny_path, controlnet_alinea_path]) # Fooocus4BL: refreshing with extra-CNs
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_path)
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_face_path)
 
@@ -817,7 +817,7 @@ def worker():
                     return
             
             # Fooocus4BL: extra-CNs task preparation
-            for cn_flag in (flags.cn_adepthF, flags.cn_adepthS, flags.cn_arecolor, flags.cn_alightQ, flags.cn_alightC, flags.cn_acanny, flags.cn_asedge):
+            for cn_flag in (flags.cn_adepthF, flags.cn_adepthS, flags.cn_arecolor, flags.cn_alightQ, flags.cn_alightC, flags.cn_acanny, flags.cn_alinea):
                 for task in cn_tasks[cn_flag]:
                     cn_img, cn_stop, cn_weight = task
                     if controlnet_inpaint_lrtb is not None:
@@ -950,7 +950,7 @@ def worker():
                         (flags.cn_alightQ, controlnet_alightQ_path), #cn_alightQ
                         (flags.cn_alightC, controlnet_alightC_path), #cn_alightC
                         (flags.cn_acanny, controlnet_acanny_path), #cn_acanny
-                        (flags.cn_asedge, controlnet_asedge_path), #cn_asedge
+                        (flags.cn_alinea, controlnet_alinea_path), #cn_alinea
                     ]:
                         for cn_img, cn_stop, cn_weight in cn_tasks[cn_flag]:
                             # Fooocus4BL: sanity check

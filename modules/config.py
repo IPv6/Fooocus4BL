@@ -729,14 +729,14 @@ def downloading_controlnet_alight(): # Fooocus4BL: model preloading cn_alightQ
         file_name='control_sdxl_qrcode_monster.safetensors'
     )
     return os.path.join(path_controlnet, 'control_sdxl_qrcode_monster.safetensors')
-def downloading_controlnet_asedge(): # Fooocus4BL: model preloading cn_asedge
+def downloading_controlnet_alinea(): # Fooocus4BL: model preloading cn_alinea
     load_file_from_url(
         # url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/sargezt_xl_softedge.safetensors',
         url='https://huggingface.co/TheMistoAI/MistoLine/resolve/main/mistoLine_fp16.safetensors',
         model_dir=path_controlnet,
-        file_name='control_sdxl_asedge.safetensors'
+        file_name='control_sdxl_alinea.safetensors'
     )
-    return os.path.join(path_controlnet, 'control_sdxl_asedge.safetensors')
+    return os.path.join(path_controlnet, 'control_sdxl_alinea.safetensors')
 
 def downloading_ip_adapters(v):
     assert v in ['ip', 'face']
