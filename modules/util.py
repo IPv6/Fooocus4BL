@@ -126,7 +126,8 @@ def set_image_shape_ceil(im, shape_ceil):
 
     if H == H_origin and W == W_origin:
         return im
-
+    
+    print(f'- Image size re-adjustment', (W_origin, H_origin), (W,H), shape_ceil)
     return resample_image(im, width=W, height=H)
 
 
