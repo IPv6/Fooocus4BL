@@ -478,6 +478,7 @@ def worker():
         if overwrite_height > 0:
             height = overwrite_height
 
+        print(f'[Parameters] Goals = {goals}')
         print(f'[Parameters] Sampler = {sampler_name} - {scheduler_name}')
         print(f'[Parameters] Steps = {steps} - {switch}')
 
