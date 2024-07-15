@@ -1179,18 +1179,17 @@ def worker():
                 goals, inpaint_head_model_path, inpaint_image, inpaint_mask, inpaint_parameterized, ip_adapter_face_path,
                 ip_adapter_path, ip_negative_path, skip_prompt_processing, use_synthetic_refiner)
 
-        # Fooocus4BL: sanity check (vary+inpaint goals lead to tensor size mismatch)
-        if ('vary' in goals) or ('upscale' in goals):
-            if ('vary' in goals):
-                print(f'[Inpaint] removing Vary goal due active inpainting')
-                goals.remove('vary')
-            if ('upscale' in goals):
-                print(f'[Inpaint] removing Upscale goal due active inpainting')
-                goals.remove('upscale')
-            
         # Load or unload CNs
         progressbar(async_task, current_progress, 'Loading control models ...')
 
+        # Fooocus4BL: sanity check (vary+inpaint goals lead to tensor size mismatch)
+        if ('inpaint' in goals) or ('enhance' in goals):
+            if ('vary' in goals):
+                print(f'[Inpaint] removing Vary goal due active inpainting/enhance')
+                goals.remove('vary')
+            if ('upscale' in goals):
+                print(f'[Inpaint] removing Upscale goal due active inpainting/enhance')
+                goals.remove('upscale')
         # Fooocus4BL: extra-CNs model preloading
         if len(async_task.cn_tasks[flags.cn_adepthF]) > 0:
             async_task.controlnet_adepthF_path = modules.config.downloading_controlnet_adepth(True)
