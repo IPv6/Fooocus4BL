@@ -56,6 +56,16 @@ class AsyncTask:
         self.inpaint_additional_prompt = args.pop()
         self.inpaint_mask_image_upload = args.pop()
 
+        # Fooocus4BL: extra-CNs
+        self.controlnet_inpaint_refmasksh = None
+        self.controlnet_inpaint_lrtb = None
+        self.controlnet_adepthF_path = None #cn_adepthF
+        self.controlnet_arecolor_path = None #cn_arecolor
+        self.controlnet_alightQ_path = None #cn_alightQ
+        self.controlnet_alightC_path = None #cn_alightC
+        self.controlnet_acanny_path = None #cn_acanny
+        self.controlnet_alinea_path = None #cn_alinea
+
         self.disable_preview = args.pop()
         self.disable_intermediate_results = args.pop()
         self.disable_seed_increment = args.pop()
@@ -284,9 +294,24 @@ def worker():
         if 'cn' in goals:
             for cn_flag, cn_path in [
                 (flags.cn_canny, controlnet_canny_path),
-                (flags.cn_cpds, controlnet_cpds_path)
+                (flags.cn_cpds, controlnet_cpds_path),
+
+                # Fooocus4BL: extra-CNs conditioning
+                (flags.cn_adepthF, async_task.controlnet_adepthF_path), #cn_adepthF
+                (flags.cn_arecolor, async_task.controlnet_arecolor_path), #cn_arecolor
+                (flags.cn_alightQ, async_task.controlnet_alightQ_path), #cn_alightQ
+                (flags.cn_alightC, async_task.controlnet_alightC_path), #cn_alightC
+                (flags.cn_acanny, async_task.controlnet_acanny_path), #cn_acanny
+                (flags.cn_alinea, async_task.controlnet_alinea_path), #cn_alinea
             ]:
                 for cn_img, cn_stop, cn_weight in async_task.cn_tasks[cn_flag]:
+
+                    # Fooocus4BL: sanity check
+                    print(f'CN condition: {cn_flag}: sa:{cn_stop} w:{cn_weight} img:{cn_img.shape}')
+                    if (cn_stop<0.001) or (cn_weight<0.001) or (cn_path not in pipeline.loaded_ControlNets):
+                        print(f'// {cn_flag}: zero influence, skipping')
+                        continue
+
                     positive_cond, negative_cond = core.apply_controlnet(
                         positive_cond, negative_cond,
                         pipeline.loaded_ControlNets[cn_path], cn_img, cn_weight, 0, cn_stop)
@@ -416,6 +441,21 @@ def worker():
             task[0] = core.numpy_to_pytorch(cn_img)
             if async_task.debugging_cn_preprocessor:
                 yield_result(async_task, cn_img, current_progress, async_task.black_out_nsfw, do_not_show_finished_images=True)
+
+        # Fooocus4BL: extra-CNs: task preparation
+        for cn_flag in (flags.cn_adepthF, flags.cn_arecolor, flags.cn_alightQ, flags.cn_alightC, flags.cn_acanny, flags.cn_alinea):
+            for task in async_task.cn_tasks[cn_flag]:
+                cn_img, cn_stop, cn_weight = task
+                if async_task.controlnet_inpaint_lrtb is not None:
+                    if cn_img.shape[0]!=async_task.controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=async_task.controlnet_inpaint_refmasksh[1]:
+                        print(f'CN condition: {cn_flag}: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {async_task.controlnet_inpaint_refmasksh}')
+                    # else:
+                    #     print(f'CN condition: {cn_flag}: clipping for inpaint: {controlnet_inpaint_lrtb}')
+                    cn_img = cn_img[async_task.controlnet_inpaint_lrtb[0]:async_task.controlnet_inpaint_lrtb[1], async_task.controlnet_inpaint_lrtb[2]:async_task.controlnet_inpaint_lrtb[3]]
+                cn_img = resize_image(HWC3(cn_img), width=width, height=height)
+                cn_img = HWC3(cn_img)
+                task[0] = core.numpy_to_pytorch(cn_img)
+
         for task in async_task.cn_tasks[flags.cn_ip]:
             cn_img, cn_stop, cn_weight = task
             cn_img = HWC3(cn_img)
@@ -492,6 +532,12 @@ def worker():
             yield_result(async_task, inpaint_worker.current_task.visualize_mask_processing(), 100,
                          async_task.black_out_nsfw, do_not_show_finished_images=True)
             raise EarlyReturnException
+
+        # Fooocus4BL: extra-CNs: setup clipping to match inpainting
+        if len(async_task.outpaint_selections) == 0:
+            async_task.controlnet_inpaint_refmasksh = inpaint_mask.shape
+            async_task.controlnet_inpaint_lrtb = inpaint_worker.current_task.interested_area
+            print(f'Inpainting: CN clipping: initial mask shape = {async_task.controlnet_inpaint_refmasksh}, mask clip zone = {async_task.controlnet_inpaint_lrtb}.')
 
         if advance_progress:
             current_progress += 1
@@ -1133,9 +1179,35 @@ def worker():
                 goals, inpaint_head_model_path, inpaint_image, inpaint_mask, inpaint_parameterized, ip_adapter_face_path,
                 ip_adapter_path, ip_negative_path, skip_prompt_processing, use_synthetic_refiner)
 
+        # Fooocus4BL: sanity check (vary+inpaint goals lead to tensor size mismatch)
+        if ('vary' in goals) or ('upscale' in goals):
+            if ('vary' in goals):
+                print(f'[Inpaint] removing Vary goal due active inpainting')
+                goals.remove('vary')
+            if ('upscale' in goals):
+                print(f'[Inpaint] removing Upscale goal due active inpainting')
+                goals.remove('upscale')
+            
         # Load or unload CNs
         progressbar(async_task, current_progress, 'Loading control models ...')
-        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path])
+
+        # Fooocus4BL: extra-CNs model preloading
+        if len(async_task.cn_tasks[flags.cn_adepthF]) > 0:
+            async_task.controlnet_adepthF_path = modules.config.downloading_controlnet_adepth(True)
+        # if len(cn_tasks[flags.cn_adepthS]) > 0:
+        #     controlnet_adepthS_path = modules.config.downloading_controlnet_adepth(False)
+        if len(async_task.cn_tasks[flags.cn_arecolor]) > 0:
+            async_task.controlnet_arecolor_path = modules.config.downloading_controlnet_arecolor()
+        if len(async_task.cn_tasks[flags.cn_alightQ]) > 0:
+            async_task.controlnet_alightQ_path = modules.config.downloading_controlnet_alight()
+        if len(async_task.cn_tasks[flags.cn_alightC]) > 0:
+            async_task.controlnet_alightC_path = modules.config.downloading_controlnet_cpds()
+        if len(async_task.cn_tasks[flags.cn_acanny]) > 0:
+            async_task.controlnet_acanny_path = modules.config.downloading_controlnet_canny()
+        if len(async_task.cn_tasks[flags.cn_alinea]) > 0:
+            async_task.controlnet_alinea_path = modules.config.downloading_controlnet_alinea()
+
+        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [async_task.controlnet_adepthF_path, async_task.controlnet_arecolor_path, async_task.controlnet_alightQ_path, async_task.controlnet_alightC_path, async_task.controlnet_acanny_path, async_task.controlnet_alinea_path]) # Fooocus4BL: refreshing with extra-CNs
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_path)
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_face_path)
 

@@ -79,6 +79,21 @@ default_parameters = {
     cn_ip: (0.5, 0.6), cn_ip_face: (0.9, 0.75), cn_canny: (0.5, 1.0), cn_cpds: (0.5, 1.0)
 }  # stop, weight
 
+# Fooocus4BL: flags and defaults declaration
+cn_adepthF = "ADepthF"
+cn_arecolor = "ARecolor"
+cn_alightQ = "ALightQ"
+cn_alightC = "ALightC"
+cn_acanny = "ACanny"
+cn_alinea = "ALineA"
+ip_list = ip_list + [cn_adepthF, cn_alinea, cn_acanny, cn_alightQ, cn_alightC, cn_arecolor]
+default_parameters[cn_adepthF] = (0.8, 0.8)
+default_parameters[cn_alinea] = (0.7, 1.0)
+default_parameters[cn_acanny] = (0.7, 1.0)
+default_parameters[cn_alightQ] = (0.5, 0.5)
+default_parameters[cn_alightC] = (0.5, 0.5)
+default_parameters[cn_arecolor] = (0.8, 0.8)
+
 output_formats = ['png', 'jpeg', 'webp']
 
 inpaint_mask_models = ['u2net', 'u2netp', 'u2net_human_seg', 'u2net_cloth_seg', 'silueta', 'isnet-general-use', 'isnet-anime', 'sam']

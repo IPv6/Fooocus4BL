@@ -796,6 +796,44 @@ def downloading_controlnet_cpds():
     )
     return os.path.join(path_controlnet, 'fooocus_xl_cpds_128.safetensors')
 
+# Extra-CNs
+def downloading_controlnet_adepth(useFull): # Fooocus4BL: model preloading cn_adepthF cn_adepthS
+    model_url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank256/control-lora-depth-rank256.safetensors' # 774Mb ==128==lllyasviel/sai. Sppradic blotches WTF
+    model_name='control_sdxl_depth_small.safetensors'
+    if useFull:
+        model_url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_depth_full.safetensors' # 2.5Gb # best for following depth details. But huge
+        model_name='control_sdxl_depth_full.safetensors'
+    load_file_from_url(
+        url=model_url,
+        model_dir=path_controlnet,
+        file_name=model_name
+    )
+    return os.path.join(path_controlnet, model_name)
+def downloading_controlnet_arecolor(): # Fooocus4BL: model preloading cn_arecolor
+    load_file_from_url(
+        url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank128/control-lora-recolor-rank128.safetensors', # == sai_xl_recolor_128lora.safetensors
+        model_dir=path_controlnet,
+        file_name='control_sdxl_recolor.safetensors'
+    )
+    return os.path.join(path_controlnet, 'control_sdxl_recolor.safetensors')
+def downloading_controlnet_alight(): # Fooocus4BL: model preloading cn_alightQ
+    load_file_from_url(
+        # ??? https://huggingface.co/Nacholmo/qr-pattern-sdxl-ControlNet-LLLite # LLLite: unsupported format
+        # url='https://huggingface.co/monster-labs/control_v1p_sdxl_qrcode_monster/resolve/main/diffusion_pytorch_model.safetensors', # 5Gb
+        # url='https://huggingface.co/Nacholmo/controlnet-qr-pattern-sdxl/resolve/main/diffusion_pytorch_model.safetensors', # 5Gb # same as monster-labs
+        url='https://huggingface.co/r3gm/controlnet-qr-pattern-sdxl-fp16/resolve/main/diffusion_pytorch_model.fp16.safetensors',  # 2.3Gb
+        model_dir=path_controlnet,
+        file_name='control_sdxl_qrcode_monster.safetensors'
+    )
+    return os.path.join(path_controlnet, 'control_sdxl_qrcode_monster.safetensors')
+def downloading_controlnet_alinea(): # Fooocus4BL: model preloading cn_alinea
+    load_file_from_url(
+        # url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/sargezt_xl_softedge.safetensors',
+        url='https://huggingface.co/TheMistoAI/MistoLine/resolve/main/mistoLine_fp16.safetensors',
+        model_dir=path_controlnet,
+        file_name='control_sdxl_alinea.safetensors'
+    )
+    return os.path.join(path_controlnet, 'control_sdxl_alinea.safetensors')
 
 def downloading_ip_adapters(v):
     assert v in ['ip', 'face']

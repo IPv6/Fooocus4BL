@@ -38,7 +38,10 @@ def refresh_controlnets(model_paths):
             if p in loaded_ControlNets:
                 cache[p] = loaded_ControlNets[p]
             else:
-                cache[p] = core.load_controlnet(p)
+                p_m = core.load_controlnet(p)
+                if p_m is None:
+                    print(f'WARNING: Failed to load ControlNet model: {p}')
+                cache[p] = p_m
     loaded_ControlNets = cache
     return
 
