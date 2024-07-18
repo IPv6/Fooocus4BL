@@ -295,7 +295,7 @@ def worker():
                 (flags.cn_canny, controlnet_canny_path),
                 (flags.cn_cpds, controlnet_cpds_path),
 
-                # Fooocus4BL: extra-CNs conditioning
+                # Fooocus4BL: extra-CNs
                 (flags.cn_adepthF, async_task.controlnet_adepthF_path), #cn_adepthF
                 (flags.cn_arecolor, async_task.controlnet_arecolor_path), #cn_arecolor
                 (flags.cn_alightQ, async_task.controlnet_alightQ_path), #cn_alightQ
@@ -448,8 +448,8 @@ def worker():
                 if async_task.controlnet_inpaint_lrtb is not None:
                     if cn_img.shape[0]!=async_task.controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=async_task.controlnet_inpaint_refmasksh[1]:
                         print(f'CN condition: {cn_flag}: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {async_task.controlnet_inpaint_refmasksh}')
-                    # else:
-                    #     print(f'CN condition: {cn_flag}: clipping for inpaint: {controlnet_inpaint_lrtb}')
+                    else:
+                        print(f'CN condition: {cn_flag}: clipping cn-image for inpaint: {async_task.controlnet_inpaint_lrtb}')
                     cn_img = cn_img[async_task.controlnet_inpaint_lrtb[0]:async_task.controlnet_inpaint_lrtb[1], async_task.controlnet_inpaint_lrtb[2]:async_task.controlnet_inpaint_lrtb[3]]
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
                 cn_img = HWC3(cn_img)
@@ -1192,8 +1192,6 @@ def worker():
         # Fooocus4BL: extra-CNs model preloading
         if len(async_task.cn_tasks[flags.cn_adepthF]) > 0:
             async_task.controlnet_adepthF_path = modules.config.downloading_controlnet_adepth(True)
-        # if len(cn_tasks[flags.cn_adepthS]) > 0:
-        #     controlnet_adepthS_path = modules.config.downloading_controlnet_adepth(False)
         if len(async_task.cn_tasks[flags.cn_arecolor]) > 0:
             async_task.controlnet_arecolor_path = modules.config.downloading_controlnet_arecolor()
         if len(async_task.cn_tasks[flags.cn_alightQ]) > 0:
