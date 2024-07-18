@@ -339,12 +339,12 @@ with shared.gradio_root:
 
                     with gr.TabItem(label='Metadata') as metadata_tab:
                         with gr.Column():
-                            metadata_input_image = grh.Image(label='For images created by Fooocus', source='upload', type='filepath')
+                            metadata_input_image = grh.Image(label='For images created by Fooocus', source='upload', type='pil')
                             metadata_json = gr.JSON(label='Metadata')
                             metadata_import_button = gr.Button(value='Apply Metadata')
 
-                        def trigger_metadata_preview(filepath):
-                            parameters, metadata_scheme = modules.meta_parser.read_info_from_image(filepath)
+                        def trigger_metadata_preview(file):
+                            parameters, metadata_scheme = modules.meta_parser.read_info_from_image(file)
 
                             results = {}
                             if parameters is not None:
@@ -860,24 +860,6 @@ with shared.gradio_root:
                 refresh_files.click(refresh_files_clicked, [], refresh_files_output + lora_ctrls,
                                     queue=False, show_progress=False)
 
-            with gr.Tab(label='Audio'):
-                play_notification = gr.Checkbox(label='Play notification after rendering', value=False)
-                notification_file = 'notification.mp3'
-                if os.path.exists(notification_file):
-                    notification = gr.State(value=notification_file)
-                    notification_input = gr.Audio(label='Notification', interactive=True, elem_id='audio_notification', visible=False, show_edit_button=False)
-
-                    def play_notification_checked(r, notification):
-                        return gr.update(visible=r, value=notification if r else None)
-
-                    def notification_input_changed(notification_input, notification):
-                        if notification_input:
-                            notification = notification_input
-                        return notification
-
-                    play_notification.change(fn=play_notification_checked, inputs=[play_notification, notification], outputs=[notification_input], queue=False)
-                    notification_input.change(fn=notification_input_changed, inputs=[notification_input, notification], outputs=[notification], queue=False)
-
         state_is_generating = gr.State(False)
 
         load_data_outputs = [advanced_checkbox, image_number, prompt, negative_prompt, style_selections,
@@ -1013,8 +995,8 @@ with shared.gradio_root:
 
         load_parameter_button.click(modules.meta_parser.load_parameter_button_click, inputs=[prompt, state_is_generating, inpaint_mode], outputs=load_data_outputs, queue=False, show_progress=False)
 
-        def trigger_metadata_import(filepath, state_is_generating):
-            parameters, metadata_scheme = modules.meta_parser.read_info_from_image(filepath)
+        def trigger_metadata_import(file, state_is_generating):
+            parameters, metadata_scheme = modules.meta_parser.read_info_from_image(file)
             if parameters is None:
                 print('Could not find metadata in the image!')
                 parsed_parameters = {}
@@ -1044,6 +1026,11 @@ with shared.gradio_root:
                                     reset_button, stop_button, skip_button,
                                     progress_html, progress_window, progress_gallery, gallery],
                            queue=False)
+
+        for notification_file in ['notification.ogg', 'notification.mp3']:
+            if os.path.exists(notification_file):
+                gr.Audio(interactive=False, value=notification_file, elem_id='audio_notification', visible=False)
+                break
 
         def trigger_describe(mode, img):
             # Fooocys4BL: sanity check
