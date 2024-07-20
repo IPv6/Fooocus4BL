@@ -62,7 +62,7 @@ class AsyncTask:
         self.controlnet_adepthF_path = None #cn_adepthF
         self.controlnet_arecolor_path = None #cn_arecolor
         self.controlnet_alightQ_path = None #cn_alightQ
-        self.controlnet_alightC_path = None #cn_alightC
+        # self.controlnet_alightC_path = None #cn_alightC
         self.controlnet_acanny_path = None #cn_acanny
         self.controlnet_alinea_path = None #cn_alinea
 
@@ -299,7 +299,7 @@ def worker():
                 (flags.cn_adepthF, async_task.controlnet_adepthF_path), #cn_adepthF
                 (flags.cn_arecolor, async_task.controlnet_arecolor_path), #cn_arecolor
                 (flags.cn_alightQ, async_task.controlnet_alightQ_path), #cn_alightQ
-                (flags.cn_alightC, async_task.controlnet_alightC_path), #cn_alightC
+                # (flags.cn_alightC, async_task.controlnet_alightC_path), #cn_alightC
                 (flags.cn_acanny, async_task.controlnet_acanny_path), #cn_acanny
                 (flags.cn_alinea, async_task.controlnet_alinea_path), #cn_alinea
             ]:
@@ -442,7 +442,7 @@ def worker():
                 yield_result(async_task, cn_img, current_progress, async_task.black_out_nsfw, do_not_show_finished_images=True)
 
         # Fooocus4BL: extra-CNs: task preparation
-        for cn_flag in (flags.cn_adepthF, flags.cn_arecolor, flags.cn_alightQ, flags.cn_alightC, flags.cn_acanny, flags.cn_alinea):
+        for cn_flag in (flags.cn_adepthF, flags.cn_arecolor, flags.cn_alightQ, flags.cn_acanny, flags.cn_alinea): # +flags.cn_alightC
             for task in async_task.cn_tasks[cn_flag]:
                 cn_img, cn_stop, cn_weight = task
                 if async_task.controlnet_inpaint_lrtb is not None:
@@ -1196,14 +1196,14 @@ def worker():
             async_task.controlnet_arecolor_path = modules.config.downloading_controlnet_arecolor()
         if len(async_task.cn_tasks[flags.cn_alightQ]) > 0:
             async_task.controlnet_alightQ_path = modules.config.downloading_controlnet_alight()
-        if len(async_task.cn_tasks[flags.cn_alightC]) > 0:
-            async_task.controlnet_alightC_path = modules.config.downloading_controlnet_cpds()
+        # if len(async_task.cn_tasks[flags.cn_alightC]) > 0:
+        #     async_task.controlnet_alightC_path = modules.config.downloading_controlnet_cpds()
         if len(async_task.cn_tasks[flags.cn_acanny]) > 0:
             async_task.controlnet_acanny_path = modules.config.downloading_controlnet_canny()
         if len(async_task.cn_tasks[flags.cn_alinea]) > 0:
             async_task.controlnet_alinea_path = modules.config.downloading_controlnet_alinea()
 
-        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [async_task.controlnet_adepthF_path, async_task.controlnet_arecolor_path, async_task.controlnet_alightQ_path, async_task.controlnet_alightC_path, async_task.controlnet_acanny_path, async_task.controlnet_alinea_path]) # Fooocus4BL: refreshing with extra-CNs
+        pipeline.refresh_controlnets([controlnet_canny_path, controlnet_cpds_path] + [async_task.controlnet_adepthF_path, async_task.controlnet_arecolor_path, async_task.controlnet_alightQ_path, async_task.controlnet_acanny_path, async_task.controlnet_alinea_path]) # Fooocus4BL: refreshing with extra-CNs # +async_task.controlnet_alightC_path
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_path)
         ip_adapter.load_ip_adapter(clip_vision_path, ip_negative_path, ip_adapter_face_path)
 
