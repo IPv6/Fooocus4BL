@@ -10,18 +10,31 @@ function onPhotopeaLoaded(iframe) {
     photopeaWindow = iframe.contentWindow;
     photopeaIframe = iframe;
 
-    // // Clone some buttons to send the contents of galleries in txt2img, img2img and extras tabs
-    // // to Photopea. You can also just copy-paste the images directly but these are the ones I
-    // // use the most.
-    // createSendToPhotopeaButton("image_buttons_txt2img", window.txt2img_gallery);
-    // createSendToPhotopeaButton("image_buttons_img2img", window.img2img_gallery);
-    // createSendToPhotopeaButton("image_buttons_extras", window.extras_gallery);
-
     gradioApp().getElementById("pea_from_gal1_button").addEventListener('click', (event) => {
-        alert("Click pea_from_gal1_button")
+        let progress_gallery = document.getElementsByClassName("image_gallery");
+        console.log("- progress_gallery", progress_gallery);
+        if(!progress_gallery){
+            return;
+        }
+        let g_images = progress_gallery.querySelectorAll("img");
+        if(!g_images || g_images.length < 1){
+            return;
+        }
+        let outgoingImg = g_images[0];
+        openImageInPhotopea(outgoingImg);
     })
     gradioApp().getElementById("pea_from_gal2_button").addEventListener('click', (event) => {
-        alert("Click pea_from_gal2_button")
+        let progress_gallery = document.getElementsByClassName("image_gallery");
+        console.log("- progress_gallery", progress_gallery);
+        if(!progress_gallery){
+            return;
+        }
+        let g_images = progress_gallery.querySelectorAll("img");
+        if(!g_images || g_images.length < 2){
+            return;
+        }
+        let outgoingImg = g_images[1];
+        openImageInPhotopea(outgoingImg)
     })
     gradioApp().getElementById("pea_to_vary_button").addEventListener('click', (event) => {
         alert("Click pea_to_vary_button")
@@ -38,89 +51,41 @@ function onPhotopeaLoaded(iframe) {
     // });
 }
 
-// // Creates a button in one of the WebUI galleries that will get the currently selected image in the 
-// // gallery.
-// // `queryId`: the id for the querySelector to search for the specific gallery list of buttons.
-// // `gallery`: the gallery div itself (cached by WebUI).
-// function createSendToPhotopeaButton(queryId, gallery) {
-//     const existingButton = gradioApp().querySelector(`#${queryId} button`);
-//     const newButton = existingButton.cloneNode(true);
-//     newButton.style.display = "flex";
-//     newButton.id = `${queryId}_open_in_photopea`;
-//     newButton.title = "Send to Photopea"
-//     newButton.textContent = "\u{1F99C}";
-//     newButton.addEventListener("click", () => openImageInPhotopea(gallery));
-//     existingButton.parentNode.appendChild(newButton);
-// }
-
-// // Switches to the "Photopea" tab by finding and clicking on the DOM button.
-// function goToPhotopeaTab() {
-//     // Find Photopea tab button, as we don't know which order it might appear in.
-//     const allButtons = gradioApp().querySelector('#tabs').querySelectorAll('button');
-//     // The space after the name seems to be added automatically for some reason, so this is likely
-//     // flaky across versions. We can't use "contains" because there's also "Send to Photopea"
-//     // buttons.
-//     photopeaTabButton = Array.from(allButtons).find(button => button.textContent === 'Photopea ');
-//     photopeaTabButton.click();
-// }
-
-// // Navigates the UI to the "Inpaint Upload" tab under the img2img tab.
-// // Gradio will destroy and recreate parts of the UI when swapping tabs, so we wait for the page to
-// // be refreshed before trying to find the relevant bits.
-// function goToImg2ImgInpaintUpload(onFinished) {
-//     // Start by swapping to the img2img tab.
-//     switch_to_img2img();
-//     const img2imgdiv = gradioApp().getElementById("mode_img2img");
-
-//     waitForWebUiUpdate(img2imgdiv).then(() => {
-//         const allButtons = img2imgdiv.querySelectorAll("div.tab-nav > button");
-//         const inpaintButton =
-//             Array.from(allButtons).find(button => button.textContent === 'Inpaint upload ');
-//         inpaintButton.click();
-//         onFinished();
-//     });
-// }
-
 /* Image transfer functions */
 
-// // Returns true if the "Active Layer Only" checkbox is ticked, false otherwise.
-// function activeLayerOnly() {
-//     return gradioApp()
-//         .getElementById("photopea-use-active-layer-only")
-//         .querySelector("input[type=checkbox]").checked;
-// }
+// Gets the currently selected image in a WebUI gallery and opens it in Photopea.
+function openImageInPhotopea(outgoingImg) {
+    if(!outgoingImg || !outgoingImg.src){
+        alert("No image found");
+        return;
+    }
+    var imageSizeMatches = true;
 
-// // Gets the currently selected image in a WebUI gallery and opens it in Photopea.
-// function openImageInPhotopea(originGallery) {
-//     var imageSizeMatches = true;
-//     const outgoingImg = originGallery.querySelectorAll("img")[0];
-//     goToPhotopeaTab();
+    // First, check the image size to see if we have matching sizes. If it's bigger, we open it
+    // as a new document. Otherwise, we just append it to the current document as a new layer.
+    postMessageToPhotopea(getPhotopeaScriptString(pea_getActiveDocumentSize)).then((response) => {
+        const activeDocSize = response[0].split(",");
+        if (outgoingImg.naturalWidth > activeDocSize[0] || 
+            outgoingImg.naturalHeight > activeDocSize[1]) {
+            imageSizeMatches = false;
+        }
 
-//     // First, check the image size to see if we have matching sizes. If it's bigger, we open it
-//     // as a new document. Otherwise, we just append it to the current document as a new layer.
-//     postMessageToPhotopea(getPhotopeaScriptString(getActiveDocumentSize)).then((response) => {
-//         const activeDocSize = response[0].split(",");
-//         if (outgoingImg.naturalWidth > activeDocSize[0] || 
-//             outgoingImg.naturalHeight > activeDocSize[1]) {
-//             imageSizeMatches = false;
-//         }
+        blobTob64(outgoingImg.src, (imageData) => {
+            // Actually open the image, passing `imageSizeMatches` into Photopea's "open as new document" parameter.
+            postMessageToPhotopea(`app.open("${imageData}", null, ${imageSizeMatches});`, "*")
+                .then(() => {
+                    if (imageSizeMatches) {
+                        postMessageToPhotopea(`app.activeDocument.activeLayer.rasterize();`, "*");
+                    } else {
+                        postMessageToPhotopea(
+                            `alert("New document created as the image sent is bigger than the active document");`,
+                            "*");
+                    }
+                });
+        });
 
-//         blobTob64(outgoingImg.src, (imageData) => {
-//             // Actually open the image, passing `imageSizeMatches` into Photopea's "open as new document" parameter.
-//             postMessageToPhotopea(`app.open("${imageData}", null, ${imageSizeMatches});`, "*")
-//                 .then(() => {
-//                     if (imageSizeMatches) {
-//                         postMessageToPhotopea(`app.activeDocument.activeLayer.rasterize();`, "*");
-//                     } else {
-//                         postMessageToPhotopea(
-//                             `alert("New document created as the image sent is bigger than the active document");`,
-//                             "*");
-//                     }
-//                 });
-//         });
-
-//     });
-// }
+    });
+}
 
 // // Requests the image from Photopea, converts the array result into a base64 png, then a blob, then
 // // actually send it to the WebUI.
@@ -147,112 +112,6 @@ function onPhotopeaLoaded(iframe) {
 //         });
 // }
 
-// // Send image to a specific image widget in a Web UI tab. This basically navigates the DOM graph via
-// // queries, and magically presses buttons. You web developers sure work some dark magic.
-// function sendImageToWebUi(webUiTab, sendToControlNet, controlnetModelIndex, blob) {
-//     const file = new File([blob], "photopea_output.png")
-
-//     switch (webUiTab) {
-//         case "txt2img":
-//             switch_to_txt2img();
-//             break;
-//         case "img2img":
-//             switch_to_img2img();
-//             break;
-//         case "extras":
-//             switch_to_extras();
-//             break;
-//     }
-
-//     if (sendToControlNet) {
-//         // First, select the ControlNet accordion div.
-//         const tabId = webUiTab === "txt2img"
-//             ? "#txt2img_script_container"
-//             : "#img2img_script_container";
-//         const controlNetDiv = gradioApp().querySelector(tabId).querySelector("#controlnet");
-//         // Check if the ControlNet accordion is open by finding the image editing iFrames.
-//         setImageOnControlNetInput(controlNetDiv, controlnetModelIndex, file);
-//     } else {
-//         // For regular tabs, it's less involved - we can simply set the image on input directly.
-//         const imageInput = gradioApp().getElementById(`mode_${webUiTab}`).querySelector("input[type='file']");
-//         setImageOnInput(imageInput, file);
-//     }
-// }
-
-// // I couldn't figure out a way to inject a mask directly on an image widget. So to have an easy way
-// // of masking inpainting via selection, we send the image to "Inpaint Upload", and create a mask
-// // from selection.
-// function sendImageWithMaskSelectionToWebUi() {
-//     // Start by verifying if there actually is a selection in the document.
-//     postMessageToPhotopea(getPhotopeaScriptString(selectionExists))
-//         .then((response) => {
-//             if (response[0] === false) {
-//                 // In case there isn't, do an in-photopea alert (which is less intrusive but more
-//                 // visible).
-//                 postMessageToPhotopea(`alert("No selection in active document!");`);
-//             } else {
-//                 // Let's start by swapping to the correct tab. This is a bit more involved due to
-//                 // Gradio's reconstruction of disabled UI elements.
-//                 goToImg2ImgInpaintUpload(() => {
-//                     // In case there is a selection, we'll pass a whole script payload to Photopea
-//                     // to create the mask and export it.
-//                     const fullMessage =
-//                         getPhotopeaScriptString(createMaskFromSelection) + // 1. Create the mask
-//                         getPhotopeaScriptString(exportSelectedLayerOnly) + // 2. Function that exports the image
-//                         `app.activeDocument.activeLayer.remove();`;        // 3. Removes the temp mask layer
-
-//                     postMessageToPhotopea(fullMessage).then((resultArray) => {
-//                         // Set the mask.
-//                         const base64Png = base64ArrayBuffer(resultArray[0]);
-//                         const maskInput = gradioApp().getElementById("img_inpaint_mask").querySelector("input");
-//                         const blob = b64toBlob(base64Png, "image/png");
-//                         const file = new File([blob], "photopea_output.png");
-//                         setImageOnInput(maskInput, file);
-
-//                         // Now go in and get the actual image.
-//                         const saveMessage = activeLayerOnly()
-//                             ? getPhotopeaScriptString(exportSelectedLayerOnly)
-//                             : 'app.activeDocument.saveToOE("png");';
-
-//                         postMessageToPhotopea(saveMessage)
-//                             .then((resultArray) => {
-//                                 const base64Png = base64ArrayBuffer(resultArray[0]);
-//                                 const baseImgInput = gradioApp().getElementById("img_inpaint_base").querySelector("input");
-//                                 const blob = b64toBlob(base64Png, "image/png");
-//                                 const file = new File([blob], "photopea_output.png");
-//                                 setImageOnInput(baseImgInput, file);
-//                             });
-//                     });
-//                 });
-//             }
-//         });
-// }
-
-// // Navigates to the correct ControlNet model tab, then sets the image.
-// function setImageOnControlNetInput(controlNetDiv, controlNetModelIndex, file) {
-//     if (controlNetAccordionIsCollapsed(controlNetDiv)) {
-//         // The accordion is not open. Find the little icon arrow and click it (yes, if the arrow
-//         // ever changes, this will break).
-//         controlNetDiv.querySelector("span.icon").click();
-//     }
-//     waitForWebUiUpdate(controlNetDiv).then(() => {
-//         // When more than one Controlnet model is enabled in the WebUI settings, there will be a
-//         // series of Controlnet tabs. The one selected in the dropdown will be passed in by the
-//         // `controlnetModelIndex`.
-//         const tabs = controlNetDiv.querySelectorAll("div.tab-nav > button");
-//         if (tabs !== null && tabs.length > 1) {
-//             tabs[controlNetModelIndex].click();
-//         }
-
-//         // HACK: multiplying the index by 2 to match the proper input on the newest ControlNet extension
-//         // was determined empirically and will likely break in the future (as all other DOM-based 
-//         // addressing tends to)
-//         imageInput = controlNetDiv.querySelectorAll("input[type='file']")[controlNetModelIndex * 2];
-//         setImageOnInput(imageInput, file);
-//     }
-//     );
-// }
-
 // // Gradio's image widgets are inputs. To set the image in one, we set the image on the input and
 // // force it to refresh.
 // function setImageOnInput(imageInput, file) {
@@ -272,32 +131,32 @@ function onPhotopeaLoaded(iframe) {
 //     imageInput.dispatchEvent(event);
 // }
 
-// // Transforms a JS function body into a string that can be passed as a message to Photopea.
-// function getPhotopeaScriptString(func) {
-//     return func.toString() + `${func.name}();`
-// }
+// Transforms a JS function body into a string that can be passed as a message to Photopea.
+function getPhotopeaScriptString(func) {
+    return func.toString() + `${func.name}();`
+}
 
-// // Posts a message and receives back a promise that will eventually return a 2-element array. One of
-// // them will be Photopea's "done" message, and the other the actual payload.
-// async function postMessageToPhotopea(message) {
-//     var request = new Promise(function (resolve, reject) {
-//         var responses = [];
-//         var photopeaMessageHandle = function (response) {
-//             responses.push(response.data);
-//             // Photopea will first return the resulting data as a message to the parent window, then
-//             // another message saying "done". When we receive the latter, we fulfill the promise.
-//             if (response.data == "done") {
-//                 window.removeEventListener("message", photopeaMessageHandle);
-//                 resolve(responses)
-//             }
-//         };
-//         // Add a listener to wait for Photopea's response messages.
-//         window.addEventListener("message", photopeaMessageHandle);
-//     });
-//     // Actually execute the request to Photopea.
-//     photopeaWindow.postMessage(message, "*");
-//     return await request;
-// }
+// Posts a message and receives back a promise that will eventually return a 2-element array. One of
+// them will be Photopea's "done" message, and the other the actual payload.
+async function postMessageToPhotopea(message) {
+    var request = new Promise(function (resolve, reject) {
+        var responses = [];
+        var photopeaMessageHandle = function (response) {
+            responses.push(response.data);
+            // Photopea will first return the resulting data as a message to the parent window, then
+            // another message saying "done". When we receive the latter, we fulfill the promise.
+            if (response.data == "done") {
+                window.removeEventListener("message", photopeaMessageHandle);
+                resolve(responses)
+            }
+        };
+        // Add a listener to wait for Photopea's response messages.
+        window.addEventListener("message", photopeaMessageHandle);
+    });
+    // Actually execute the request to Photopea.
+    photopeaWindow.postMessage(message, "*");
+    return await request;
+}
 
 // // Returns a promise that will be resolved when the div passed in the parameter is modified.
 // // This will happen when Gradio reconstructs the UI after, e.g., changing tabs.
@@ -318,23 +177,95 @@ function onPhotopeaLoaded(iframe) {
 //     return await promise;
 // }
 
-// // Gradio keeps changing how their DOM works, so we just use some heuristic here to find out
-// // which child div is the one that contains the ControlNet image inputs. If that one is not
-// // displayed, we consider the accordion is closed. Other methods include direct indices, or
-// // checking if the arrow is tilted 90 degrees on the style, both seemed flakier.
-// function controlNetAccordionIsCollapsed(controlNetDiv) {
-//     // Get the immediate children of the ControlNet accordion. One of them will contain the
-//     // actual image widgets.
-//     const directDescendents = controlNetDiv.children;
-//     // All of the image iframes are contained within the same content div, so we can use any.
-//     const sampleIframe = controlNetDiv.querySelectorAll("iframe")[0];
+// Turn an image into a b64 string.
+// From https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript
+function blobTob64(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            callback(reader.result);
+        }
+        reader.readAsDataURL(xhr.response);
+    };
+    xhr.open('GET', url);
+    xhr.responseType = 'blob';
+    xhr.send();
+}
 
-//     for(var i = 0; i < directDescendents.length; i++) {
-//         if(directDescendents[i].contains(sampleIframe)) {
-//             return directDescendents[i].style['display'] === 'none';
-//         }
-//     }
-//     // As a fallback, to prevent constantly triggering the toggle in case future versions break
-//     // this heuristic, we just return false.
-//     return false;
-// }
+// Turn a base64 string into a blob. 
+// From https://gist.github.com/gauravmehla/7a7dfd87dd7d1b13697b6e894426615f
+function b64toBlob(b64Data, contentType, sliceSize) {
+    var contentType = contentType || '';
+    var sliceSize = sliceSize || 512;
+    var byteCharacters = atob(b64Data);
+    var byteArrays = [];
+    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
+        var byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+    }
+    return new Blob(byteArrays, { type: contentType });
+}
+
+// From: https://gist.github.com/jonleighton/958841
+function base64ArrayBuffer(arrayBuffer) {
+    var base64 = ''
+    var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+    var bytes = new Uint8Array(arrayBuffer)
+    var byteLength = bytes.byteLength
+    var byteRemainder = byteLength % 3
+    var mainLength = byteLength - byteRemainder
+
+    var a, b, c, d
+    var chunk
+
+    // Main loop deals with bytes in chunks of 3
+    for (var i = 0; i < mainLength; i = i + 3) {
+        // Combine the three bytes into a single integer
+        chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
+
+        // Use bitmasks to extract 6-bit segments from the triplet
+        a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
+        b = (chunk & 258048) >> 12 // 258048   = (2^6 - 1) << 12
+        c = (chunk & 4032) >> 6 // 4032     = (2^6 - 1) << 6
+        d = chunk & 63               // 63       = 2^6 - 1
+
+        // Convert the raw binary segments to the appropriate ASCII encoding
+        base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+    }
+
+    // Deal with the remaining bytes and padding
+    if (byteRemainder == 1) {
+        chunk = bytes[mainLength]
+
+        a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
+
+        // Set the 4 least significant bits to zero
+        b = (chunk & 3) << 4 // 3   = 2^2 - 1
+
+        base64 += encodings[a] + encodings[b] + '=='
+    } else if (byteRemainder == 2) {
+        chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
+
+        a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
+        b = (chunk & 1008) >> 4 // 1008  = (2^6 - 1) << 4
+
+        // Set the 2 least significant bits to zero
+        c = (chunk & 15) << 2 // 15    = 2^4 - 1
+
+        base64 += encodings[a] + encodings[b] + encodings[c] + '='
+    }
+
+    return base64
+}
+
+// from https://github.com/yankooliveira/sd-webui-photopea-embed/blob/99ea83f925f187a959b177318b16f840a3cdc11d/javascript/photopea-scripts.js#L76
+function pea_getActiveDocumentSize() {
+    app.echoToOE(app.activeDocument.width + "," + app.activeDocument.height);
+}
