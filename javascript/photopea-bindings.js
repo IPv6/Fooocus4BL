@@ -30,7 +30,18 @@ function onPhotopeaLoaded(iframe) {
     gradioApp().getElementById("pea_to_inpaint_button").addEventListener('click', (event) => {
         getAndSendImageToWebUITab(switchToInpaintWithImage);
     })
-
+    gradioApp().getElementById("pea_to_cn1_button").addEventListener('click', (event) => {
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, "component-36") );
+    })
+    gradioApp().getElementById("pea_to_cn2_button").addEventListener('click', (event) => {
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, "component-44") );
+    })
+    gradioApp().getElementById("pea_to_cn3_button").addEventListener('click', (event) => {
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, "component-52") );
+    })
+    gradioApp().getElementById("pea_to_cn4_button").addEventListener('click', (event) => {
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, "component-60") );
+    })
     // // Listen to the size slider changes.
     // gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
     //     // Get the value of the slider and parse it as an integer
@@ -106,6 +117,11 @@ function switchToVaryWithImage(image_file){
 function switchToInpaintWithImage(image_file){
     switchToTab('Inpaint or Outpaint');
     const imageInput = gradioApp().getElementById(`component-71`).querySelector("input[type='file']");
+    setImageOnInput(imageInput, image_file);
+}
+function switchToCNWithImage(image_file, comp_id){
+    switchToTab('Image Prompt');
+    const imageInput = gradioApp().getElementById(comp_id).querySelector("input[type='file']");
     setImageOnInput(imageInput, image_file);
 }
 
