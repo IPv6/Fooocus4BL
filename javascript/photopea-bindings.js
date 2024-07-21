@@ -17,6 +17,13 @@ function onPhotopeaLoaded(iframe) {
     // createSendToPhotopeaButton("image_buttons_img2img", window.img2img_gallery);
     // createSendToPhotopeaButton("image_buttons_extras", window.extras_gallery);
 
+    gradioApp().getElementById("pea_gal1_button").addEventListener('click', (event) => {
+        alert("Click1")
+    }
+    gradioApp().getElementById("pea_gal2_button").addEventListener('click', (event) => {
+        alert("Click2")
+    }
+
     // // Listen to the size slider changes.
     // gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
     //     // Get the value of the slider and parse it as an integer

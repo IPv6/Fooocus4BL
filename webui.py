@@ -378,6 +378,8 @@ with shared.gradio_root:
                                 onload = '{PHOTOPEA_IFRAME_LOADED_EVENT}(this)'>'''
                             )
                         with gr.Row():
+                            pea_gal1_button = gr.Button(label="Gallery1->Pea", value="", elem_classes='type_row', elem_id='pea_gal1_button', visible=True)
+                            pea_gal2_button = gr.Button(label="Gallery2->Pea", value="", elem_classes='type_row', elem_id='pea_gal2_button', visible=True)
                             gr.HTML('* \"Photopea\" is powered by Photopea API. <a href="https://www.photopea.com/api" target="_blank">\U0001F4D4 Document</a>')
 
             with gr.Row(visible=modules.config.default_enhance_checkbox) as enhance_input_panel:
