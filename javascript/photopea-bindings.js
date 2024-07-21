@@ -1,6 +1,6 @@
 // # Fooocus4BL. Migrated from WebUI
+// https://github.com/yankooliveira/sd-webui-photopea-embed/blob/99ea83f925f187a959b177318b16f840a3cdc11d/javascript/photopea-bindings.js#L6
 
-/* Setup and navigation */
 var photopeaWindow = null;
 var photopeaIframe = null;
 
@@ -12,30 +12,24 @@ function onPhotopeaLoaded(iframe) {
 
     gradioApp().getElementById("pea_from_gal1_button").addEventListener('click', (event) => {
         let progress_gallery = document.getElementsByClassName("image_gallery");
-        console.log("- progress_gallery", progress_gallery);
-        if(!progress_gallery || progress_gallery.length < 1){
-            return;
-        }
+        if(!progress_gallery || progress_gallery.length < 1){return;}
         let g_images = progress_gallery[0].querySelectorAll("img");
-        console.log("- progress_gallery g_images", g_images);
         let outgoingImg = g_images[0];
         openImageInPhotopea(outgoingImg);
     })
     gradioApp().getElementById("pea_from_gal2_button").addEventListener('click', (event) => {
         let progress_gallery = document.getElementsByClassName("image_gallery");
-        console.log("- progress_gallery", progress_gallery);
-        if(!progress_gallery || progress_gallery.length < 2){
-            return;
-        }
-        let g_images = progress_gallery[1].querySelectorAll("img");
-        console.log("- progress_gallery g_images", g_images);
-        let outgoingImg = g_images[0];
+        if(!progress_gallery || progress_gallery.length < 1){return;}
+        let g_images = progress_gallery[0].querySelectorAll("img");
+        let outgoingImg = g_images[1];
         openImageInPhotopea(outgoingImg)
     })
     gradioApp().getElementById("pea_to_vary_button").addEventListener('click', (event) => {
-        alert("Click pea_to_vary_button")
+        getAndSendImageToWebUITab(switchToVaryWithImage);
     })
-    
+    gradioApp().getElementById("pea_to_inpaint_button").addEventListener('click', (event) => {
+        getAndSendImageToWebUITab(switchToInpaintWithImage);
+    })
 
     // // Listen to the size slider changes.
     // gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
@@ -46,8 +40,6 @@ function onPhotopeaLoaded(iframe) {
     //     photopeaIframe.style.height = newHeight + 'px';
     // });
 }
-
-/* Image transfer functions */
 
 // Gets the currently selected image in a WebUI gallery and opens it in Photopea.
 function openImageInPhotopea(outgoingImg) {
@@ -74,7 +66,7 @@ function openImageInPhotopea(outgoingImg) {
                         postMessageToPhotopea(`app.activeDocument.activeLayer.rasterize();`, "*");
                     } else {
                         postMessageToPhotopea(
-                            `alert("New document created as the image sent is bigger than the active document");`,
+                            `alert("New document created (the image sent is bigger than the active document)");`,
                             "*");
                     }
                 });
@@ -83,49 +75,56 @@ function openImageInPhotopea(outgoingImg) {
     });
 }
 
-// // Requests the image from Photopea, converts the array result into a base64 png, then a blob, then
-// // actually send it to the WebUI.
-// function getAndSendImageToWebUITab(webUiTab, sendToControlnet, imageWidgetIndex) {
-//     // Photopea only allows exporting the whole image, so in case "Active layer only" is selected in
-//     // the UI, instead of just requesting the image to be saved, we also make all non-selected
-//     // layers invisible.
-//     const saveMessage = activeLayerOnly()
-//         ? getPhotopeaScriptString(exportSelectedLayerOnly)
-//         : 'app.activeDocument.saveToOE("png");';
+// Requests the image from Photopea, converts the array result into a base64 png, then a blob, then actually send it to the WebUI.
+function getAndSendImageToWebUITab(continuation) {
+    // Photopea only allows exporting the whole image
+    const saveMessage = 'app.activeDocument.saveToOE("png");';
+    postMessageToPhotopea(saveMessage)
+        .then((resultArray) => {
+            // The first index of the payload is an ArrayBuffer of the image. We convert that to
+            // base64 string, then to blob, so it can be sent to a specific image widget in WebUI.
+            // There's likely a direct ArrayBuffer -> Blob conversion, but we're already using b64
+            // as an intermediate format.
+            const base64Png = base64ArrayBuffer(resultArray[0]);
+            let blob = b64toBlob(base64Png, "image/png")
+            const file = new File([blob], "photopea_output.png")
+            continuation(file);
+        });
+}
 
-//     postMessageToPhotopea(saveMessage)
-//         .then((resultArray) => {
-//             // The first index of the payload is an ArrayBuffer of the image. We convert that to
-//             // base64 string, then to blob, so it can be sent to a specific image widget in WebUI.
-//             // There's likely a direct ArrayBuffer -> Blob conversion, but we're already using b64
-//             // as an intermediate format.
-//             const base64Png = base64ArrayBuffer(resultArray[0]);
-//             sendImageToWebUi(
-//                 webUiTab,
-//                 sendToControlnet,
-//                 imageWidgetIndex,
-//                 b64toBlob(base64Png, "image/png"));
-//         });
-// }
+function switchToTab(tab) {
+    const tabs = Array.from(gradioApp().querySelectorAll('.tabs > .tab-nav > button'));
+    const btn = tabs?.find((t) => (t.innerText === tab));
+    if (btn) btn.click();
+}
 
-// // Gradio's image widgets are inputs. To set the image in one, we set the image on the input and
-// // force it to refresh.
-// function setImageOnInput(imageInput, file) {
-//     // Createa a data transfer element to set as the data in the input.
-//     const dt = new DataTransfer();
-//     dt.items.add(file);
-//     const list = dt.files;
+function switchToVaryWithImage(image_file){
+    switchToTab('Upscale or Variation');
+    const imageInput = gradioApp().getElementById(`component-27`).querySelector("input[type='file']");
+    setImageOnInput(imageInput, image_file);
+}
+function switchToInpaintWithImage(image_file){
+    switchToTab('Inpaint or Outpaint');
+    const imageInput = gradioApp().getElementById(`component-71`).querySelector("input[type='file']");
+    setImageOnInput(imageInput, image_file);
+}
 
-//     // Actually set the image in the image widget.
-//     imageInput.files = list;
-
-//     // Foce the image widget to update with the new image, after setting its source files.
-//     const event = new Event('change', {
-//         'bubbles': true,
-//         "composed": true
-//     });
-//     imageInput.dispatchEvent(event);
-// }
+// Gradio's image widgets are inputs. To set the image in one, we set the image on the input and
+// force it to refresh.
+function setImageOnInput(imageInput, file) {
+    // Createa a data transfer element to set as the data in the input.
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    const list = dt.files;
+    // Actually set the image in the image widget.
+    imageInput.files = list;
+    // Foce the image widget to update with the new image, after setting its source files.
+    const event = new Event('change', {
+        'bubbles': true,
+        "composed": true
+    });
+    imageInput.dispatchEvent(event);
+}
 
 // Transforms a JS function body into a string that can be passed as a message to Photopea.
 function getPhotopeaScriptString(func) {

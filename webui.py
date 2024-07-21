@@ -378,9 +378,10 @@ with shared.gradio_root:
                                 onload = '{PHOTOPEA_IFRAME_LOADED_EVENT}(this)'>'''
                             )
                         with gr.Row():
-                            pea_from_gal1_button = gr.Button(label="Gallery1->Pea", value="Gallery1->Pea", variant='secondary', elem_classes='type_row', elem_id='pea_from_gal1_button', visible=True)
-                            pea_from_gal2_button = gr.Button(label="Gallery2->Pea", value="Gallery2->Pea", variant='secondary', elem_classes='type_row', elem_id='pea_from_gal2_button', visible=True)
-                            pea_to_vary_button = gr.Button(label="Pea->Vary", value="Pea->Vary", variant='secondary', elem_classes='type_row', elem_id='pea_to_vary_button', visible=True)
+                            pea_from_gal1_button = gr.Button(label="Gallery #1->Pea", value="Gallery #1->Pea", variant='secondary', elem_classes='type_row', elem_id='pea_from_gal1_button', visible=True)
+                            pea_from_gal2_button = gr.Button(label="Gallery #2->Pea", value="Gallery #2->Pea", variant='secondary', elem_classes='type_row', elem_id='pea_from_gal2_button', visible=True)
+                            pea_to_vary_button = gr.Button(label="Pea->Vary/Upscale", value="Pea->Vary/Upscale", variant='secondary', elem_classes='type_row', elem_id='pea_to_vary_button', visible=True)
+                            pea_to_inpaint_button = gr.Button(label="Pea->Inpaint", value="Pea->Inpaint", variant='secondary', elem_classes='type_row', elem_id='pea_to_inpaint_button', visible=True)
                         with gr.Row():
                             gr.HTML('* \"Photopea\" is powered by Photopea API. <a href="https://www.photopea.com/api" target="_blank">\U0001F4D4 Document</a>')
 
