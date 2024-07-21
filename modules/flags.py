@@ -82,17 +82,17 @@ default_parameters = {
 # Fooocus4BL: flags and defaults declaration
 cn_adepthF = "ADepthF"
 cn_arecolor = "ARecolor"
-cn_alightQ = "ALightQ"
-cn_alightC = "ALightC"
+cn_ashapeQ = "AShapeQ"
+cn_ashapeC = "AShapeC"
 cn_acanny = "ACanny"
-cn_alinea = "ALineA"
-ip_list = ip_list + [cn_adepthF, cn_alinea, cn_acanny, cn_alightQ, cn_alightC, cn_arecolor]
-default_parameters[cn_adepthF] = (0.8, 0.8)
-default_parameters[cn_alinea] = (0.7, 1.0)
-default_parameters[cn_acanny] = (0.7, 1.0)
-default_parameters[cn_alightQ] = (0.5, 0.5)
-default_parameters[cn_alightC] = (0.5, 0.5)
-default_parameters[cn_arecolor] = (0.8, 0.8)
+cn_alineA = "ALineA"
+ip_list = ip_list + [cn_adepthF, cn_alineA, cn_acanny, cn_ashapeQ, cn_ashapeC, cn_arecolor]
+default_parameters[cn_adepthF] = (1.0, 0.33)
+default_parameters[cn_alineA] = (1.0, 0.33)
+default_parameters[cn_acanny] = (1.0, 0.33)
+default_parameters[cn_ashapeQ] = (0.5, 0.5)
+default_parameters[cn_ashapeC] = (0.5, 0.5)
+default_parameters[cn_arecolor] = (0.5, 0.5)
 
 output_formats = ['png', 'jpeg', 'webp']
 
