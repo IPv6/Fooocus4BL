@@ -17,12 +17,16 @@ function onPhotopeaLoaded(iframe) {
     // createSendToPhotopeaButton("image_buttons_img2img", window.img2img_gallery);
     // createSendToPhotopeaButton("image_buttons_extras", window.extras_gallery);
 
-    gradioApp().getElementById("pea_gal1_button").addEventListener('click', (event) => {
-        alert("Click1")
-    }
-    gradioApp().getElementById("pea_gal2_button").addEventListener('click', (event) => {
-        alert("Click2")
-    }
+    gradioApp().getElementById("pea_from_gal1_button").addEventListener('click', (event) => {
+        alert("Click pea_from_gal1_button")
+    })
+    gradioApp().getElementById("pea_from_gal2_button").addEventListener('click', (event) => {
+        alert("Click pea_from_gal2_button")
+    })
+    gradioApp().getElementById("pea_to_vary_button").addEventListener('click', (event) => {
+        alert("Click pea_to_vary_button")
+    })
+    
 
     // // Listen to the size slider changes.
     // gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
