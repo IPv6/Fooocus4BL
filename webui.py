@@ -358,6 +358,32 @@ with shared.gradio_root:
                         metadata_input_image.upload(trigger_metadata_preview, inputs=metadata_input_image,
                                                     outputs=metadata_json, queue=False, show_progress=True)
 
+                    with gr.TabItem(label='Photopea') as photopea_tab: # Fooocus4BL
+                        PHOTOPEA_MAIN_URL = 'https://www.photopea.com/'
+                        PHOTOPEA_IFRAME_ID = 'webui-photopea-iframe'
+                        PHOTOPEA_IFRAME_HEIGHT = '800px'
+                        PHOTOPEA_IFRAME_WIDTH = '100%'
+                        PHOTOPEA_IFRAME_LOADED_EVENT = 'onPhotopeaLoaded'
+
+                        def get_photopea_url_params():
+                            return '#%7B%22resources%22:%5B%22data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIAAQMAAADOtka5AAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAANQTFRF////p8QbyAAAADZJREFUeJztwQEBAAAAgiD/r25IQAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfBuCAAAB0niJ8AAAAABJRU5ErkJggg==%22%5D%7D'
+
+                        with gr.Row():
+                            photopea = gr.HTML(
+                                f'''
+                                <iframe id='{PHOTOPEA_IFRAME_ID}' 
+                                src = '{PHOTOPEA_MAIN_URL}{get_photopea_url_params()}' 
+                                width = '{PHOTOPEA_IFRAME_WIDTH}' 
+                                height = '{PHOTOPEA_IFRAME_HEIGHT}'
+                                onload = '{PHOTOPEA_IFRAME_LOADED_EVENT}(this)'>'''
+                            )
+                        with gr.Row():
+                            pea_from_gal1_button = gr.Button(label="Gallery1->Pea", value="Gallery1->Pea", variant='secondary', elem_classes='type_row', elem_id='pea_from_gal1_button', visible=True)
+                            pea_from_gal2_button = gr.Button(label="Gallery2->Pea", value="Gallery2->Pea", variant='secondary', elem_classes='type_row', elem_id='pea_from_gal2_button', visible=True)
+                            pea_to_vary_button = gr.Button(label="Gallery2->Pea", value="Gallery2->Pea", variant='secondary', elem_classes='type_row', elem_id='pea_to_vary_button', visible=True)
+                        with gr.Row():
+                            gr.HTML('* \"Photopea\" is powered by Photopea API. <a href="https://www.photopea.com/api" target="_blank">\U0001F4D4 Document</a>')
+
             with gr.Row(visible=modules.config.default_enhance_checkbox) as enhance_input_panel:
                 with gr.Tabs():
                     with gr.TabItem(label='Upscale or Variation'):
