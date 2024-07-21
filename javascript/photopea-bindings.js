@@ -13,27 +13,23 @@ function onPhotopeaLoaded(iframe) {
     gradioApp().getElementById("pea_from_gal1_button").addEventListener('click', (event) => {
         let progress_gallery = document.getElementsByClassName("image_gallery");
         console.log("- progress_gallery", progress_gallery);
-        if(!progress_gallery){
+        if(!progress_gallery || progress_gallery.length < 1){
             return;
         }
-        let g_images = progress_gallery.querySelectorAll("img");
-        if(!g_images || g_images.length < 1){
-            return;
-        }
+        let g_images = progress_gallery[0].querySelectorAll("img");
+        console.log("- progress_gallery g_images", g_images);
         let outgoingImg = g_images[0];
         openImageInPhotopea(outgoingImg);
     })
     gradioApp().getElementById("pea_from_gal2_button").addEventListener('click', (event) => {
         let progress_gallery = document.getElementsByClassName("image_gallery");
         console.log("- progress_gallery", progress_gallery);
-        if(!progress_gallery){
+        if(!progress_gallery || progress_gallery.length < 2){
             return;
         }
-        let g_images = progress_gallery.querySelectorAll("img");
-        if(!g_images || g_images.length < 2){
-            return;
-        }
-        let outgoingImg = g_images[1];
+        let g_images = progress_gallery[1].querySelectorAll("img");
+        console.log("- progress_gallery g_images", g_images);
+        let outgoingImg = g_images[0];
         openImageInPhotopea(outgoingImg)
     })
     gradioApp().getElementById("pea_to_vary_button").addEventListener('click', (event) => {
