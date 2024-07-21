@@ -106,28 +106,38 @@ function getAndSendImageToWebUITab(continuation) {
 function switchToTab(tab) {
     const tabs = Array.from(gradioApp().querySelectorAll('.tabs > .tab-nav > button'));
     const btn = tabs?.find((t) => (t.innerText === tab));
-    if (btn) btn.click();
+    if (btn) {
+        btn.click();
+    }
 }
 
 function switchToVaryWithImage(image_file){
     switchToTab('Upscale or Variation');
-    const imageInput = gradioApp().getElementById(`component-27`).querySelector("input[type='file']");
+    const imageInput = gradioApp().getElementById(`component-27`)?.querySelector("input[type='file']");
     setImageOnInput(imageInput, image_file);
 }
 function switchToInpaintWithImage(image_file){
     switchToTab('Inpaint or Outpaint');
-    const imageInput = gradioApp().getElementById(`component-71`).querySelector("input[type='file']");
+    const imageInput = gradioApp().getElementById(`component-71`)?.querySelector("input[type='file']");
     setImageOnInput(imageInput, image_file);
 }
 function switchToCNWithImage(image_file, comp_id){
     switchToTab('Image Prompt');
-    const imageInput = gradioApp().getElementById(comp_id).querySelector("input[type='file']");
+    const imageInput = gradioApp().getElementById(comp_id)?.querySelector("input[type='file']");
     setImageOnInput(imageInput, image_file);
 }
 
 // Gradio's image widgets are inputs. To set the image in one, we set the image on the input and
 // force it to refresh.
 function setImageOnInput(imageInput, file) {
+    if(!imageInput){
+        alert("UI not recognized");
+        return;
+    }
+    if(!file){
+        alert("Image not valid");
+        return;
+    }
     // Createa a data transfer element to set as the data in the input.
     const dt = new DataTransfer();
     dt.items.add(file);
