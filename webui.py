@@ -380,8 +380,8 @@ with shared.gradio_root:
                         with gr.Row():
                             pea_from_gal1_button = gr.Button(label="Gallery #1->Pea", value="Gallery #1->Pea", variant='secondary', elem_classes='type_row', elem_id='pea_from_gal1_button', visible=True)
                             pea_from_gal2_button = gr.Button(label="Gallery #2->Pea", value="Gallery #2->Pea", variant='secondary', elem_classes='type_row', elem_id='pea_from_gal2_button', visible=True)
-                            pea_to_vary_button = gr.Button(label="Pea->Vary/Upscale", value="Pea->Vary/Upscale", variant='secondary', elem_classes='type_row', elem_id='pea_to_vary_button', visible=True)
-                            pea_to_inpaint_button = gr.Button(label="Pea->Inpaint", value="Pea->Inpaint", variant='secondary', elem_classes='type_row', elem_id='pea_to_inpaint_button', visible=True)
+                            pea_to_vary_button = gr.Button(label="Pea->Upscale/Vary", value="Pea->Upscale/Vary", variant='secondary', elem_classes='type_row', elem_id='pea_to_vary_button', visible=True)
+                            pea_to_inpaint_button = gr.Button(label="Pea->Inpaint/Outpaint", value="Pea->Inpaint/Outpaint", variant='secondary', elem_classes='type_row', elem_id='pea_to_inpaint_button', visible=True)
                         with gr.Row():
                             pea_to_cn1_button = gr.Button(label="Pea->Image Prompt #1", value="Pea->Image Prompt #1", elem_classes='type_row_half', elem_id='pea_to_cn1_button', visible=True)
                             pea_to_cn2_button = gr.Button(label="Pea->Image Prompt #2", value="Pea->Image Prompt #2", elem_classes='type_row_half', elem_id='pea_to_cn2_button', visible=True)
