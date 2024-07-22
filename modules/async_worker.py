@@ -450,6 +450,7 @@ def worker():
                         print(f'CN condition: {cn_flag}: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {async_task.controlnet_inpaint_refmasksh}')
                     else:
                         print(f'CN condition: {cn_flag}: clipping cn-image for inpaint: {async_task.controlnet_inpaint_lrtb}')
+                    # clipping image. will be rescaled to full resolution from this clipped part
                     cn_img = cn_img[async_task.controlnet_inpaint_lrtb[0]:async_task.controlnet_inpaint_lrtb[1], async_task.controlnet_inpaint_lrtb[2]:async_task.controlnet_inpaint_lrtb[3]]
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
                 cn_img = HWC3(cn_img)
