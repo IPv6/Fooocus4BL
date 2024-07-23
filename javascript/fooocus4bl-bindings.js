@@ -72,23 +72,26 @@ function setupCNAutoprep(elem_id){
         fname = fname.substring(0, dotIndex);
         var spl = fname.split("-");
         if(!spl || spl.length == 0){ return; }
-        console.log("setupCNAutoprep: parts", spl);
+        // console.log("setupCNAutoprep: parts", spl);
         // Checking if there is tab-id or tab-name
         // let cn1_tabs = gradioApp().getElementById(elem_id)?.querySelectorAll("input[type='radio']");
         for(var ii of spl){
             let cn1_tab = gradioApp().getElementById(elem_id)?.querySelector("input[type='radio'][value='"+ii+"'");
             if(cn1_tab){
-                console.log("setupCNAutoprep: CN type detected", ii, cn1_tab);
                 cn1_tab.checked = true;
                 let cn_sa = extractNumberWithPrefix(fname,"-sa");
                 let cn_w = extractNumberWithPrefix(fname,"-w");
+                console.log("setupCNAutoprep: CN type detected", ii, cn_sa, cn_w);
                 setTimeout(()=>{
                     let num_inputs = gradioApp().getElementById(elem_id)?.querySelectorAll("input[type='number']");
+                    console.log("setupCNAutoprep: CN type num_inputs", ii, num_inputs);
                     if(num_inputs && num_inputs[0] && cn_sa){
-                        num_inputs[0] = cn_sa/100.0;
+                        num_inputs[0].value = cn_sa/100.0;
+                        num_inputs[0].dispatchEvent(new Event('input', { 'bubbles': true }));
                     }
                     if(num_inputs && num_inputs[1] && cn_w){
-                        num_inputs[1] = cn_w/100.0;
+                        num_inputs[1].value = cn_w/100.0;
+                        num_inputs[1].dispatchEvent(new Event('input', { 'bubbles': true }));
                     }
                 }, 500);
                 break;
@@ -98,17 +101,16 @@ function setupCNAutoprep(elem_id){
     imageInput_cn1.onchange = function () {
         try{
             let fname = this.files[0].name;
-            setTimeout(()=>applyFName(fname), 100);
+            setTimeout(()=>applyFName(fname), 700);
         }catch(e){
             console.log("setupCNAutoprep: failed, exc:",e)
         }
     };
     const dropZone_cn1 = gradioApp().getElementById(elem_id)?.querySelector(".image-container > div");
-    console.log("- dropZone_cn1", dropZone_cn1)
     dropZone_cn1.addEventListener("drop", (e) => {
         try{
             let fname = e.dataTransfer.files[0].name;
-            setTimeout(()=>applyFName(fname), 100);
+            setTimeout(()=>applyFName(fname), 700);
         }catch(e){
             console.log("setupCNAutoprep: failed, exc:",e)
         }
