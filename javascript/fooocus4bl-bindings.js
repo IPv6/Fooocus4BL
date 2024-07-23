@@ -84,7 +84,7 @@ function setupCNAutoprep(elem_id){
                 console.log("setupCNAutoprep: CN type detected", ii, cn_sa, cn_w);
                 setTimeout(()=>{
                     let num_inputs = gradioApp().getElementById(elem_id)?.querySelectorAll("input[type='number']");
-                    console.log("setupCNAutoprep: CN type num_inputs", ii, num_inputs);
+                    // console.log("setupCNAutoprep: CN type num_inputs", ii, num_inputs);
                     if(num_inputs && num_inputs[0] && cn_sa){
                         num_inputs[0].value = cn_sa/100.0;
                         num_inputs[0].dispatchEvent(new Event('input', { 'bubbles': true }));
