@@ -79,6 +79,7 @@ function setupCNAutoprep(elem_id){
             let cn1_tab = gradioApp().getElementById(elem_id)?.querySelector("input[type='radio'][value='"+ii+"'");
             if(cn1_tab){
                 cn1_tab.checked = true;
+                cn1_tab.dispatchEvent(new Event('change', { 'bubbles': true }));
                 let cn_sa = extractNumberWithPrefix(fname,"-sa");
                 let cn_w = extractNumberWithPrefix(fname,"-w");
                 console.log("setupCNAutoprep: CN type detected", ii, cn_sa, cn_w);
@@ -93,7 +94,7 @@ function setupCNAutoprep(elem_id){
                         num_inputs[1].value = cn_w/100.0;
                         num_inputs[1].dispatchEvent(new Event('input', { 'bubbles': true }));
                     }
-                }, 500);
+                }, 1000);
                 break;
             }
         }
