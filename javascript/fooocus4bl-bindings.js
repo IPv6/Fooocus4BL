@@ -6,12 +6,7 @@ var photopeaIframe = null;
 
 var elem_id_vary = "component-27";
 var elem_id_inpaint = "component-71";
-var elem_id_cns = [
-    {"root":"component-36", "drop":"component-37"}, 
-    {"root":"component-44"},
-    {"root":"component-52"},
-    {"root":"component-60"}
-]
+var elem_id_cns = ["component-36", "component-44","component-52","component-60"]
 
 // Called by the iframe set up on photopea-tab.py.
 function onPhotopeaLoaded(iframe) {
@@ -40,16 +35,16 @@ function onPhotopeaLoaded(iframe) {
         getAndSendImageToWebUITab(switchToInpaintWithImage);
     })
     gradioApp().getElementById("pea_to_cn1_button").addEventListener('click', (event) => {
-        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[0].root) );
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[0]) );
     })
     gradioApp().getElementById("pea_to_cn2_button").addEventListener('click', (event) => {
-        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[1].root) );
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[1]) );
     })
     gradioApp().getElementById("pea_to_cn3_button").addEventListener('click', (event) => {
-        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[2].root) );
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[2]) );
     })
     gradioApp().getElementById("pea_to_cn4_button").addEventListener('click', (event) => {
-        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[3].root) );
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[3]) );
     })
     // // Listen to the size slider changes.
     // gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
@@ -67,15 +62,28 @@ function onPhotopeaLoaded(iframe) {
     setupCNAutoprep(elem_id_cns[3]);
 }
 
-function setupCNAutoprep(elem_meta){
-    const imageInput_cn1 = gradioApp().getElementById(elem_meta.root)?.querySelector("input[type='file']");
-    imageInput_cn1?.onchange = function () {
-        console.log('CN1: Selected file: ' + this.files[0].name);
+function setupCNAutoprep(elem_id){
+    const imageInput_cn1 = gradioApp().getElementById(elem_id)?.querySelector("input[type='file']");
+    function applyFName(fname){
+        console.log("file added", fname);
+    }
+    imageInput_cn1.onchange = function () {
+        try{
+            let fname = this.files[0].name;
+            setInterval(()=>applyFName(fname), 1000);
+        }catch(e){
+            console.log("setupCNAutoprep: failed, exc:",e)
+        }
     };
-    const dropZone_cn1 = gradioApp().getElementById(elem_meta.drop);
-    dropZone_cn1?.addEventListener("drop", (e) => {
-        const target = e.dataTransfer;
-        console.log('CN1: Dropped file: ' + target);
+    const dropZone_cn1 = gradioApp().getElementById(elem_id)?.querySelector(".image-container > div");
+    console.log("- dropZone_cn1", dropZone_cn1)
+    dropZone_cn1.addEventListener("drop", (e) => {
+        try{
+            let fname = e.originalEvent.dataTransfer.files[0].name
+            setInterval(()=>applyFName(fname), 1000);
+        }catch(e){
+            console.log("setupCNAutoprep: failed, exc:",e)
+        }
     });
 }
 
