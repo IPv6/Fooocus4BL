@@ -199,14 +199,9 @@ with shared.gradio_root:
                             ip_ctrls = []
                             ip_ad_cols = []
                             for _ in range(flags.controlnet_image_count):
-                                def trigger_cn_autosetup(image):
-                                    # value = modules.util.get_image_size_info(image, modules.flags.sdxl_aspect_ratios)
-                                    print("- uploading", image)
-                                    return
                                 with gr.Column():
                                     ip_image = grh.Image(label='Image', source='upload', type='numpy', show_label=False, height=300)
                                     ip_images.append(ip_image)
-                                    ip_image.change(trigger_cn_autosetup, show_progress=False, queue=False, inputs=ip_image)
                                     ip_ctrls.append(ip_image)
                                     with gr.Column(visible=False) as ad_col:
                                         with gr.Row():

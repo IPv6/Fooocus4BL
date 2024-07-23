@@ -4,6 +4,15 @@
 var photopeaWindow = null;
 var photopeaIframe = null;
 
+var elem_id_vary = "component-27";
+var elem_id_inpaint = "component-71";
+var elem_id_cns = [
+    {"root":"component-36", "drop":"component-37"}, 
+    {"root":"component-44"},
+    {"root":"component-52"},
+    {"root":"component-60"}
+]
+
 // Called by the iframe set up on photopea-tab.py.
 function onPhotopeaLoaded(iframe) {
     console.log("Photopea iFrame loaded");
@@ -31,16 +40,16 @@ function onPhotopeaLoaded(iframe) {
         getAndSendImageToWebUITab(switchToInpaintWithImage);
     })
     gradioApp().getElementById("pea_to_cn1_button").addEventListener('click', (event) => {
-        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, "component-36") );
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[0].root) );
     })
     gradioApp().getElementById("pea_to_cn2_button").addEventListener('click', (event) => {
-        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, "component-44") );
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[1].root) );
     })
     gradioApp().getElementById("pea_to_cn3_button").addEventListener('click', (event) => {
-        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, "component-52") );
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[2].root) );
     })
     gradioApp().getElementById("pea_to_cn4_button").addEventListener('click', (event) => {
-        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, "component-60") );
+        getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[3].root) );
     })
     // // Listen to the size slider changes.
     // gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
@@ -50,6 +59,24 @@ function onPhotopeaLoaded(iframe) {
     //     // Update the height of the iframe
     //     photopeaIframe.style.height = newHeight + 'px';
     // });
+
+    // CNs extension - image name parsing into CN parameters
+    setupCNAutoprep(elem_id_cns[0]);
+    setupCNAutoprep(elem_id_cns[1]);
+    setupCNAutoprep(elem_id_cns[2]);
+    setupCNAutoprep(elem_id_cns[3]);
+}
+
+function setupCNAutoprep(elem_meta){
+    const imageInput_cn1 = gradioApp().getElementById(elem_meta.root)?.querySelector("input[type='file']");
+    imageInput_cn1?.onchange = function () {
+        console.log('CN1: Selected file: ' + this.files[0].name);
+    };
+    const dropZone_cn1 = gradioApp().getElementById(elem_meta.drop);
+    dropZone_cn1?.addEventListener("drop", (e) => {
+        const target = e.dataTransfer;
+        console.log('CN1: Dropped file: ' + target);
+    });
 }
 
 // Gets the currently selected image in a WebUI gallery and opens it in Photopea.
@@ -82,7 +109,6 @@ function openImageInPhotopea(outgoingImg) {
                     }
                 });
         });
-
     });
 }
 
@@ -113,12 +139,12 @@ function switchToTab(tab) {
 
 function switchToVaryWithImage(image_file){
     switchToTab('Upscale or Variation');
-    const imageInput = gradioApp().getElementById(`component-27`)?.querySelector("input[type='file']");
+    const imageInput = gradioApp().getElementById(elem_id_vary)?.querySelector("input[type='file']");
     setImageOnInput(imageInput, image_file);
 }
 function switchToInpaintWithImage(image_file){
     switchToTab('Inpaint or Outpaint');
-    const imageInput = gradioApp().getElementById(`component-71`)?.querySelector("input[type='file']");
+    const imageInput = gradioApp().getElementById(elem_id_inpaint)?.querySelector("input[type='file']");
     setImageOnInput(imageInput, image_file);
 }
 function switchToCNWithImage(image_file, comp_id){
