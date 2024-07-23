@@ -66,10 +66,11 @@ function setupCNAutoprep(elem_id){
     const imageInput_cn1 = gradioApp().getElementById(elem_id)?.querySelector("input[type='file']");
     function applyFName(fname){
         console.log("setupCNAutoprep: CN file detected", fname);
-        const dotIndex = fileName?.lastIndexOf(".");
+        const dotIndex = fname?.lastIndexOf(".");
         if (dotIndex === -1) { return };
         // Splitting by "-" ignoring extension (last one)
-        var spl = fname.substring(0, dotIndex).split("-");
+        fname = fname.substring(0, dotIndex);
+        var spl = fname.split("-");
         if(!spl || spl.length == 0){ return; }
         console.log("setupCNAutoprep: parts", spl);
         // Checking if there is tab-id or tab-name
@@ -79,13 +80,25 @@ function setupCNAutoprep(elem_id){
             if(cn1_tab){
                 console.log("setupCNAutoprep: CN type detected", ii, cn1_tab);
                 cn1_tab.checked = true;
+                let cn_sa = extractNumberWithPrefix(fname,"-sa");
+                let cn_w = extractNumberWithPrefix(fname,"-w");
+                setTimeout(()=>{
+                    let num_inputs = gradioApp().getElementById(elem_id)?.querySelectorAll("input[type='number']");
+                    if(num_inputs && num_inputs[0] && cn_sa){
+                        num_inputs[0] = cn_sa/100.0;
+                    }
+                    if(num_inputs && num_inputs[1] && cn_w){
+                        num_inputs[1] = cn_w/100.0;
+                    }
+                }, 500);
+                break;
             }
         }
     }
     imageInput_cn1.onchange = function () {
         try{
             let fname = this.files[0].name;
-            setTimeout(()=>applyFName(fname), 1000);
+            setTimeout(()=>applyFName(fname), 100);
         }catch(e){
             console.log("setupCNAutoprep: failed, exc:",e)
         }
@@ -95,7 +108,7 @@ function setupCNAutoprep(elem_id){
     dropZone_cn1.addEventListener("drop", (e) => {
         try{
             let fname = e.dataTransfer.files[0].name;
-            setTimeout(()=>applyFName(fname), 1000);
+            setTimeout(()=>applyFName(fname), 100);
         }catch(e){
             console.log("setupCNAutoprep: failed, exc:",e)
         }
@@ -338,4 +351,19 @@ function base64ArrayBuffer(arrayBuffer) {
 // from https://github.com/yankooliveira/sd-webui-photopea-embed/blob/99ea83f925f187a959b177318b16f840a3cdc11d/javascript/photopea-scripts.js#L76
 function pea_getActiveDocumentSize() {
     app.echoToOE(app.activeDocument.width + "," + app.activeDocument.height);
+}
+
+function extractNumberWithPrefix(str, prefix) {
+    var onum = null;
+    try{
+        // Create a regular expression dynamically with the prefix
+        // The \d+ matches one or more digits
+        const regex = new RegExp(prefix + "(\\d+)");
+        // Use the match() method to find the number after the prefix
+        const match = str.match(regex);
+        onum = match ? parseInt(match[1]) : null;
+    }catch(e){
+        return null;
+    }
+    return onum
 }
