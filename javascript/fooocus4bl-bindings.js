@@ -65,12 +65,27 @@ function onPhotopeaLoaded(iframe) {
 function setupCNAutoprep(elem_id){
     const imageInput_cn1 = gradioApp().getElementById(elem_id)?.querySelector("input[type='file']");
     function applyFName(fname){
-        console.log("file added", fname);
+        console.log("setupCNAutoprep: CN file detected", fname);
+        const dotIndex = fileName?.lastIndexOf(".");
+        if (dotIndex === -1) { return };
+        // Splitting by "-" ignoring extension (last one)
+        var spl = fname.substring(0, dotIndex).split("-");
+        if(!spl || spl.length == 0){ return; }
+        console.log("setupCNAutoprep: parts", spl);
+        // Checking if there is tab-id or tab-name
+        // let cn1_tabs = gradioApp().getElementById(elem_id)?.querySelectorAll("input[type='radio']");
+        for(var ii of spl){
+            let cn1_tab = gradioApp().getElementById(elem_id)?.querySelector("input[type='radio'][value='"+ii+"'");
+            if(cn1_tab){
+                console.log("setupCNAutoprep: CN type detected", ii, cn1_tab);
+                cn1_tab.checked = true;
+            }
+        }
     }
     imageInput_cn1.onchange = function () {
         try{
             let fname = this.files[0].name;
-            setInterval(()=>applyFName(fname), 1000);
+            setTimeout(()=>applyFName(fname), 1000);
         }catch(e){
             console.log("setupCNAutoprep: failed, exc:",e)
         }
@@ -79,8 +94,8 @@ function setupCNAutoprep(elem_id){
     console.log("- dropZone_cn1", dropZone_cn1)
     dropZone_cn1.addEventListener("drop", (e) => {
         try{
-            let fname = e.originalEvent.dataTransfer.files[0].name
-            setInterval(()=>applyFName(fname), 1000);
+            let fname = e.dataTransfer.files[0].name;
+            setTimeout(()=>applyFName(fname), 1000);
         }catch(e){
             console.log("setupCNAutoprep: failed, exc:",e)
         }
