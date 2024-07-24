@@ -1094,7 +1094,7 @@ with shared.gradio_root:
             enhance_input_image.upload(lambda: gr.update(value=True), outputs=enhance_checkbox, queue=False, show_progress=False) \
                 .then(trigger_auto_describe, inputs=[desc_method, enhance_input_image, prompt], outputs=[prompt, style_selections], show_progress=True, queue=True)
     
-    shared.gradio_root.load(_js="window?.onFooocusUILoaded();", queue=False) # Fooocus4BL
+    shared.gradio_root.load(_js="window?.onFooocusUILoaded", queue=False) # Fooocus4BL
 
 def dump_default_english_config():
     from modules.localization import dump_english_config
