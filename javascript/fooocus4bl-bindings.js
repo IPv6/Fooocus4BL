@@ -57,6 +57,7 @@ function onPhotopeaLoaded(iframe) {
 }
 
 window.onFooocusUILoaded = function() {
+    console.log("- Fooocus4BL: UI loaded");
     // CNs extension - image name parsing into CN parameters
     setupCNAutoprep(elem_id_cns[0]);
     setupCNAutoprep(elem_id_cns[1]);
