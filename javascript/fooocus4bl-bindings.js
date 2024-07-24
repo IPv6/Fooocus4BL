@@ -10,7 +10,7 @@ var elem_id_cns = ["component-36", "component-44","component-52","component-60"]
 
 // Called by the iframe set up on photopea-tab.py.
 function onPhotopeaLoaded(iframe) {
-    console.log("Photopea iFrame loaded");
+    console.log("Fooocus4BL: Photopea loaded");
     photopeaWindow = iframe.contentWindow;
     photopeaIframe = iframe;
 
@@ -57,7 +57,7 @@ function onPhotopeaLoaded(iframe) {
 }
 
 window.onFooocusUILoaded = function() {
-    console.log("- Fooocus4BL: UI loaded");
+    console.log("Fooocus4BL: UI loaded");
     // CNs extension - image name parsing into CN parameters
     setupCNAutoprep(elem_id_cns[0]);
     setupCNAutoprep(elem_id_cns[1]);
