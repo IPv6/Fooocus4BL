@@ -54,7 +54,9 @@ function onPhotopeaLoaded(iframe) {
     //     // Update the height of the iframe
     //     photopeaIframe.style.height = newHeight + 'px';
     // });
+}
 
+window.onFooocusUILoaded = function() {
     // CNs extension - image name parsing into CN parameters
     setupCNAutoprep(elem_id_cns[0]);
     setupCNAutoprep(elem_id_cns[1]);
