@@ -149,13 +149,14 @@ def HWC3(x):
         y = y.clip(0, 255).astype(np.uint8)
         return y
 
-
 def remove_empty_str(items, default=None):
-    items = [x for x in items if x != ""]
+    items_tmp = [x for x in items if x != ""]
+    # removing duplications too
+    items = []
+    [items.append(x.strip()) for x in items_tmp if x not in items]
     if len(items) == 0 and default is not None:
         return [default]
     return items
-
 
 def join_prompts(*args, **kwargs):
     prompts = [str(x) for x in args if str(x) != ""]

@@ -20,3 +20,7 @@
 
 * Image Prompt Tab: Parameters auto-setup with smart file parsing
   - file drop named like "etcetc-CPDS-sa60-w100.png" will automatically set type to "CPDS", "Stop At" to 0.6 and "Weight" to 1.0
+
+* Minor improvements
+  - Safety checks
+  - Proper handling of negative-only styles
