@@ -771,7 +771,6 @@ def worker():
             if advance_progress:
                 current_progress += 1
             for i, t in enumerate(tasks):
-
                 progressbar(async_task, current_progress, f'Preparing Fooocus text #{i + 1} ...')
                 expansion = pipeline.final_expansion(t['task_prompt'], t['task_seed'])
                 print(f'[Prompt Expansion] {expansion}')
@@ -780,6 +779,7 @@ def worker():
         if advance_progress:
             current_progress += 1
         for i, t in enumerate(tasks):
+            print(f'[Prompt] clip_encode positive: {t['positive']}') # Fooocus4BL
             progressbar(async_task, current_progress, f'Encoding positive #{i + 1} ...')
             t['c'] = pipeline.clip_encode(texts=t['positive'], pool_top_k=t['positive_top_k'])
         if advance_progress:
@@ -789,6 +789,7 @@ def worker():
                 t['uc'] = pipeline.clone_cond(t['c'])
             else:
                 progressbar(async_task, current_progress, f'Encoding negative #{i + 1} ...')
+                print(f'[Prompt] clip_encode negative: {t['negative']}') # Fooocus4BL
                 t['uc'] = pipeline.clip_encode(texts=t['negative'], pool_top_k=t['negative_top_k'])
         return tasks, use_expansion, loras, current_progress
 
