@@ -151,9 +151,11 @@ def HWC3(x):
 
 def remove_empty_str(items, default=None):
     items_tmp = [x for x in items if x != ""]
-    # removing duplications too
+    
+    # removing duplications too # Fooocus4BL
     items = []
-    [items.append(x.strip()) for x in items_tmp if x not in items]
+    [items.append(x) for x in items_tmp if x not in items]
+
     if len(items) == 0 and default is not None:
         return [default]
     return items
