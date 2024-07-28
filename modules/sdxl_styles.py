@@ -56,11 +56,11 @@ legal_style_names = [fooocus_expansion, random_style_name] + style_keys
 def get_random_style(rng: Random) -> str:
     return rng.choice(list(styles.items()))[0]
 
+
 def apply_style(style, positive):
     p, n = styles[style]
-    if len(p) == 0:
-        p = '{prompt}'
-    return p.replace('{prompt}', positive).splitlines(), n.splitlines()
+    return p.replace('{prompt}', positive).splitlines(), n.splitlines(), '{prompt}' in p
+
 
 def get_words(arrays, total_mult, index):
     if len(arrays) == 1:

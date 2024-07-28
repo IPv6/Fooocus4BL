@@ -23,4 +23,3 @@
 
 * Minor improvements
   - Safety checks
-  - Proper handling of negative-only styles
