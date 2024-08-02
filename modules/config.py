@@ -885,7 +885,7 @@ def downloading_controlnet_cpds():
     )
     return os.path.join(path_controlnet, 'fooocus_xl_cpds_128.safetensors')
 
-# Extra-CNs
+# Fooocus4BL: Extra-CNs
 def downloading_controlnet_adepth(useFull): # Fooocus4BL: model preloading cn_adepthF cn_adepthS
     model_url='https://huggingface.co/stabilityai/control-lora/resolve/main/control-LoRAs-rank256/control-lora-depth-rank256.safetensors' # 774Mb ==128==lllyasviel/sai. Sppradic blotches WTF
     model_name='control_sdxl_depth_small.safetensors'
@@ -923,6 +923,20 @@ def downloading_controlnet_alineA(): # Fooocus4BL: model preloading cn_alineA
         file_name='control_sdxl_alineA.safetensors'
     )
     return os.path.join(path_controlnet, 'control_sdxl_alineA.safetensors')
+def downloading_upscale_model_anime6b():
+    load_file_from_url(
+        url='https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth',
+        model_dir=path_upscale_models,
+        file_name='RealESRGAN_x4plus_anime_6B.pth'
+    )
+    return os.path.join(path_upscale_models, 'RealESRGAN_x4plus_anime_6B.pth')
+def downloading_upscale_model_xsx2():
+    load_file_from_url(
+        url='https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.3.0/RealESRGANv2-animevideo-xsx2.pth',
+        model_dir=path_upscale_models,
+        file_name='RealESRGANv2-animevideo-xsx2.pth'
+    )
+    return os.path.join(path_upscale_models, 'RealESRGANv2-animevideo-xsx2.pth')
 
 def downloading_ip_adapters(v):
     assert v in ['ip', 'face']

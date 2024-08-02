@@ -211,6 +211,8 @@ def worker():
     from modules.flags import Performance
     from modules.meta_parser import get_metadata_parser
 
+    from modules.upscaler import perform_upscale_anime6b, perform_upscale_xsx2
+
     pid = os.getpid()
     print(f'Started worker with PID {pid}')
 
@@ -622,8 +624,13 @@ def worker():
         if advance_progress:
             current_progress += 1
         progressbar(async_task, current_progress, f'Upscaling image from {str((W, H))} ...')
-        uov_input_image = perform_upscale(uov_input_image)
-        print(f'Image upscaled.')
+        if uov_method == flags.upscale_fast_anime6b.lower():
+            uov_input_image = perform_upscale_anime6b(uov_input_image)
+        elif uov_method == flags.upscale_fast_xsx2.lower():
+            uov_input_image = perform_upscale_xsx2(uov_input_image)
+        else:
+            uov_input_image = perform_upscale(uov_input_image)
+        print(f'Image upscaled. method:', uov_method)
         if '1.5x' in uov_method:
             f = 1.5
         elif '2x' in uov_method:

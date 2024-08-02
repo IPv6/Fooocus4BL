@@ -22,4 +22,6 @@
   - file drop named like "etcetc-CPDS-sa60-w100.png" will automatically set type to "CPDS", "Stop At" to 0.6 and "Weight" to 1.0
 
 * Minor improvements
+  - Alternative upscaler: https://openmodeldb.info/models/4x-realesrgan-x4plus-anime-6b
+  - Alternative upscaler: https://openmodeldb.info/models/2x-realesrganv2-animevideo-xsx2
   - Safety checks

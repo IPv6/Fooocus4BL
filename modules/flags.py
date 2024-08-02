@@ -96,6 +96,9 @@ default_parameters[cn_acanny] = (0.6, 1.0)
 default_parameters[cn_ashapeQ] = (0.6, 1.0)
 default_parameters[cn_ashapeC] = (0.6, 1.0)
 default_parameters[cn_arecolor] = (0.6, 1.0)
+upscale_fast_anime6b = 'Upscale Anime6B (Fast 2x)'
+upscale_fast_xsx2 = 'Upscale xsx2 (Fast 2x)'
+uov_list = uov_list+[upscale_fast_anime6b, upscale_fast_xsx2]
 
 output_formats = ['png', 'jpeg', 'webp']
 
