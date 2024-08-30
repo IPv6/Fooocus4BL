@@ -4,12 +4,14 @@
 
 * Extra ControNets:
   - ADepthF. Input: BW Depth map (black = far)
-  - ARecolor. Input: Colored map
-  - ALightQ. Input: BW contrast map
-  - AShapeC. Input: BW contrast map
+  - ALightQ. Input: BW lightness map
+  - AShapeC. Input: BW CPD-contrast map
 
   - ACanny. Input: BW edges/lines (PyraCanny model, 1px white lines)
   - ALineA. Input: BW edges/lines (MistoLine model, white lines)
+
+  - ARecolor. Input: Colored map
+  - AImageP. Input: Image prompt
 
   - **Extra ControNets specifics:**
   - inputs are not preprocessed at all. content must conform to controlnet behaviour

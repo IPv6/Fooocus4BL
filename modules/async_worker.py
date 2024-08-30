@@ -459,6 +459,22 @@ def worker():
                 cn_img = resize_image(HWC3(cn_img), width=width, height=height)
                 cn_img = HWC3(cn_img)
                 task[0] = core.numpy_to_pytorch(cn_img)
+        cn_flag = flags.cn_aimageP
+        for task in async_task.cn_tasks[cn_flag]:
+            cn_img, cn_stop, cn_weight = task
+            if async_task.controlnet_inpaint_lrtb is not None:
+                    if cn_img.shape[0]!=async_task.controlnet_inpaint_refmasksh[0] or cn_img.shape[1]!=async_task.controlnet_inpaint_refmasksh[1]:
+                        print(f'CN condition: {cn_flag}: Warning: clipping dimensions inconsistency: {cn_img.shape} vs {async_task.controlnet_inpaint_refmasksh}')
+                    else:
+                        print(f'CN condition: {cn_flag}: clipping cn-image for inpaint: {async_task.controlnet_inpaint_lrtb}')
+                    # clipping image. will be rescaled to full resolution from this clipped part
+                    cn_img = cn_img[async_task.controlnet_inpaint_lrtb[0]:async_task.controlnet_inpaint_lrtb[1], async_task.controlnet_inpaint_lrtb[2]:async_task.controlnet_inpaint_lrtb[3]]
+            cn_img = HWC3(cn_img)
+            # https://github.com/tencent-ailab/IP-Adapter/blob/d580c50a291566bbf9fc7ac0f760506607297e6d/README.md?plain=1#L75
+            cn_img = resize_image(cn_img, width=224, height=224, resize_mode=0)
+            task[0] = ip_adapter.preprocess(cn_img, ip_adapter_path=ip_adapter_path)
+            if async_task.debugging_cn_preprocessor:
+                yield_result(async_task, cn_img, current_progress, async_task.black_out_nsfw, do_not_show_finished_images=True)
 
         for task in async_task.cn_tasks[flags.cn_ip]:
             cn_img, cn_stop, cn_weight = task
@@ -484,6 +500,7 @@ def worker():
             if async_task.debugging_cn_preprocessor:
                 yield_result(async_task, cn_img, current_progress, async_task.black_out_nsfw, do_not_show_finished_images=True)
         all_ip_tasks = async_task.cn_tasks[flags.cn_ip] + async_task.cn_tasks[flags.cn_ip_face]
+        all_ip_tasks = all_ip_tasks+async_task.cn_tasks[flags.cn_aimageP] # Fooocus4BL
         if len(all_ip_tasks) > 0:
             pipeline.final_unet = ip_adapter.patch_model(pipeline.final_unet, all_ip_tasks)
 
@@ -976,6 +993,8 @@ def worker():
                 controlnet_canny_path = modules.config.downloading_controlnet_canny()
             if len(async_task.cn_tasks[flags.cn_cpds]) > 0:
                 controlnet_cpds_path = modules.config.downloading_controlnet_cpds()
+            if len(async_task.cn_tasks[flags.cn_aimageP]) > 0: # Fooocus4BL
+                clip_vision_path, ip_negative_path, ip_adapter_path = modules.config.downloading_ip_adapters('ip')
             if len(async_task.cn_tasks[flags.cn_ip]) > 0:
                 clip_vision_path, ip_negative_path, ip_adapter_path = modules.config.downloading_ip_adapters('ip')
             if len(async_task.cn_tasks[flags.cn_ip_face]) > 0:
