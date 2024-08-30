@@ -198,8 +198,7 @@ class CFGGuiderHacked(CFGGuider):
             extra_args['model_options'] = {k: {} if k == 'transformer_options' else v for k, v in
                                            extra_args['model_options'].items()}
 
-            models, inference_memory = get_additional_models(positive_refiner, negative_refiner,
-                                                             current_refiner.model_dtype())
+            models, inference_memory = get_additional_models(positive_refiner, negative_refiner)
             ldm_patched.modules.model_management.load_models_gpu(
                 [current_refiner] + models,
                 self.model_patcher.memory_required([noise.shape[0] * 2] + list(noise.shape[1:])) + inference_memory)
