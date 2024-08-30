@@ -339,10 +339,11 @@ with shared.gradio_root:
                             with gr.Column():
                                 describe_input_image = grh.Image(label='Image', source='upload', type='numpy', show_label=False)
                             with gr.Column():
-                                describe_method = gr.Radio(
+                                describe_methods = gr.CheckboxGroup(
                                     label='Content Type',
-                                    choices=[flags.describe_type_photo, flags.describe_type_anime],
-                                    value=flags.describe_type_photo)
+                                    choices=flags.describe_types,
+                                    value=modules.config.default_describe_content_type)
+                                describe_apply_styles = gr.Checkbox(label='Apply Styles', value=modules.config.default_describe_apply_prompts_checkbox)
                                 describe_btn = gr.Button(value='Describe this Image into Prompt')
                                 describe_image_size = gr.Textbox(label='Image Size and Recommended Size', elem_id='describe_image_size', visible=False)
                                 gr.HTML('<a href="https://github.com/lllyasviel/Fooocus/discussions/1363" target="_blank">\U0001F4D4 Documentation</a>')
@@ -1094,34 +1095,57 @@ with shared.gradio_root:
                 gr.Audio(interactive=False, value=notification_file, elem_id='audio_notification', visible=False)
                 break
 
-        def trigger_describe(mode, img):
+        def trigger_describe(modes, img, apply_styles):
             # Fooocus4BL: sanity check
             if img is None:
                 return "(no image)", ["Fooocus V2"]
+            describe_prompts = []
+            styles = set()
 
-            if mode == flags.describe_type_photo:
+            if flags.describe_type_photo in modes:
                 from extras.interrogate import default_interrogator as default_interrogator_photo
-                return default_interrogator_photo(img), ["Fooocus V2", "Fooocus Enhance", "Fooocus Sharp"]
-            if mode == flags.describe_type_anime:
-                from extras.wd14tagger import default_interrogator as default_interrogator_anime
-                return default_interrogator_anime(img), ["Fooocus V2", "Fooocus Masterpiece"]
-            return mode, ["Fooocus V2"]
+                describe_prompts.append(default_interrogator_photo(img))
+                styles.update(["Fooocus V2", "Fooocus Enhance", "Fooocus Sharp"])
 
-        describe_btn.click(trigger_describe, inputs=[describe_method, describe_input_image],
-                           outputs=[prompt, style_selections], show_progress=True, queue=True)
+            if flags.describe_type_anime in modes:
+                from extras.wd14tagger import default_interrogator as default_interrogator_anime
+                describe_prompts.append(default_interrogator_anime(img))
+                styles.update(["Fooocus V2", "Fooocus Masterpiece"])
+
+            if len(styles) == 0 or not apply_styles:
+                styles = gr.update()
+            else:
+                styles = list(styles)
+
+            if len(describe_prompts) == 0:
+                describe_prompt = gr.update()
+            else:
+                describe_prompt = ', '.join(describe_prompts)
+
+            return describe_prompt, styles
+
+        describe_btn.click(trigger_describe, inputs=[describe_methods, describe_input_image, describe_apply_styles],
+                           outputs=[prompt, style_selections], show_progress=True, queue=True) \
+            .then(fn=style_sorter.sort_styles, inputs=style_selections, outputs=style_selections, queue=False, show_progress=False) \
+            .then(lambda: None, _js='()=>{refresh_style_localization();}')
 
         if args_manager.args.enable_auto_describe_image:
-            def trigger_auto_describe(mode, img, prompt):
+            def trigger_auto_describe(mode, img, prompt, apply_styles):
                 # keep prompt if not empty
                 if prompt == '':
-                    return trigger_describe(mode, img)
+                    return trigger_describe(mode, img, apply_styles)
                 return gr.update(), gr.update()
 
-            uov_input_image.upload(trigger_auto_describe, inputs=[describe_method, uov_input_image, prompt],
-                                   outputs=[prompt, style_selections], show_progress=True, queue=True)
+            uov_input_image.upload(trigger_auto_describe, inputs=[describe_methods, uov_input_image, prompt, describe_apply_styles],
+                                   outputs=[prompt, style_selections], show_progress=True, queue=True) \
+                .then(fn=style_sorter.sort_styles, inputs=style_selections, outputs=style_selections, queue=False, show_progress=False) \
+                .then(lambda: None, _js='()=>{refresh_style_localization();}')
 
             enhance_input_image.upload(lambda: gr.update(value=True), outputs=enhance_checkbox, queue=False, show_progress=False) \
-                .then(trigger_auto_describe, inputs=[describe_method, enhance_input_image, prompt], outputs=[prompt, style_selections], show_progress=True, queue=True)
+                .then(trigger_auto_describe, inputs=[describe_methods, enhance_input_image, prompt, describe_apply_styles],
+                      outputs=[prompt, style_selections], show_progress=True, queue=True) \
+                .then(fn=style_sorter.sort_styles, inputs=style_selections, outputs=style_selections, queue=False, show_progress=False) \
+                .then(lambda: None, _js='()=>{refresh_style_localization();}')
 
     shared.gradio_root.load(_js="window?.onFooocusUILoaded", queue=False) # Fooocus4BL
 
@@ -1132,13 +1156,19 @@ def dump_default_english_config():
 
 
 # dump_default_english_config()
-
 shared.gradio_root.launch(
     inbrowser=args_manager.args.in_browser,
     server_name=args_manager.args.listen,
     server_port=args_manager.args.port,
     share=args_manager.args.share,
     auth=check_auth if (args_manager.args.share or args_manager.args.listen) and auth_enabled else None,
+    auth_message=args_manager.args.auth_message if (args_manager.args.share or args_manager.args.listen) and auth_enabled else None,
     allowed_paths=[modules.config.path_outputs],
-    blocked_paths=[constants.AUTH_FILENAME]
+    blocked_paths=[constants.AUTH_FILENAME],
+    debug=args_manager.args.verbose,
+    ssl_keyfile=args_manager.args.tls_keyfile,
+    ssl_keyfile_password=args_manager.args.tls_keyfile_password,
+    ssl_certfile=args_manager.args.tls_certfile,
+    ssl_verify=args_manager.args.tls_verify,
+    favicon_path=args_manager.args.favicon_path
 )

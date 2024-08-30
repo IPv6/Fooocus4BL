@@ -16,7 +16,6 @@ from ldm_patched.modules.sd import load_checkpoint_guess_config
 from ldm_patched.contrib.external import VAEDecode, EmptyLatentImage, VAEEncode, VAEEncodeTiled, VAEDecodeTiled, \
     ControlNetApplyAdvanced
 from ldm_patched.contrib.external_freelunch import FreeU_V2
-from ldm_patched.modules.sample import prepare_mask
 from modules.lora import match_lora
 from modules.util import get_file_from_folder_list
 from ldm_patched.modules.lora import model_lora_keys_unet, model_lora_keys_clip
@@ -231,7 +230,7 @@ def get_previewer(model):
     if vae_approx_filename in VAE_approx_models:
         VAE_approx_model = VAE_approx_models[vae_approx_filename]
     else:
-        sd = torch.load(vae_approx_filename, map_location='cpu')
+        sd = torch.load(vae_approx_filename, map_location='cpu', weights_only=True)
         VAE_approx_model = VAEApprox()
         VAE_approx_model.load_state_dict(sd)
         del sd
