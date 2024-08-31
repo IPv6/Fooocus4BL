@@ -296,7 +296,10 @@ def sdxl_encode_adm_patched(self, **kwargs):
     return final_adm
 
 
-def patched_KSamplerX0Inpaint_forward(self, x, sigma, uncond, cond, cond_scale, denoise_mask, model_options={}, seed=None):
+def patched_KSamplerX0Inpaint_forward(self, x, sigma, denoise_mask, model_options={}, seed=None):
+    uncond = self.conds.get("negative", None)
+    cond = self.conds.get("positive", None)
+    cond_scale = self.cfg
     if inpaint_worker.current_task is not None:
         latent_processor = self.inner_model.inner_model.process_latent_in
         inpaint_latent = latent_processor(inpaint_worker.current_task.latent).to(x)
