@@ -245,7 +245,7 @@ def refresh_everything(refiner_model_name, base_model_name, loras,
     final_refiner_vae = None
 
     if use_synthetic_refiner and refiner_model_name == 'None':
-        print('Synthetic Refiner Activated')
+        print('Using Synthetic Refiner')
         refresh_base_model(base_model_name, vae_name)
         synthesize_refiner_model()
     else:

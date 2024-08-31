@@ -119,7 +119,7 @@ class CFGGuiderHacked(CFGGuider):
 
             # extra_args["cond"] = positive_refiner
             # extra_args["uncond"] = negative_refiner
-            # self.set_conds( [[None, positive_refiner[0]]], [[None, negative_refiner[0]]] )
+            self.set_conds( [[None, positive_refiner[0]]], [[None, negative_refiner[0]]] )
 
             # clear ip-adapter for refiner
             extra_args['model_options'] = {k: {} if k == 'transformer_options' else v for k, v in
@@ -138,6 +138,8 @@ class CFGGuiderHacked(CFGGuider):
                 self.model_patcher.memory_required([noise.shape[0] * 2] + list(noise.shape[1:])) + inference_memory)
 
             self.inner_model = current_refiner.model
+            # rerun with new inner_model needed
+            self.conds = process_conds(self.inner_model, noise, self.conds, device, latent_image, denoise_mask, seed)
             print('Refiner Swapped')
             return
 
