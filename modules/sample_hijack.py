@@ -117,8 +117,9 @@ class CFGGuiderHacked(CFGGuider):
             cleanup_additional_models(
                 set(get_models_from_cond(self.conds['positive'], "control") + get_models_from_cond(self.conds['negative'], "control")))
 
-            extra_args["cond"] = positive_refiner
-            extra_args["uncond"] = negative_refiner
+            # extra_args["cond"] = positive_refiner
+            # extra_args["uncond"] = negative_refiner
+            self.set_conds( [[None, positive_refiner[0]]], [[None, negative_refiner[0]]] )
 
             # clear ip-adapter for refiner
             extra_args['model_options'] = {k: {} if k == 'transformer_options' else v for k, v in
