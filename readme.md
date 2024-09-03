@@ -5,7 +5,7 @@
 * Extra ControNets:
   - ADepthF. Input: BW Depth map (black = far)
   - ALightQ. Input: BW lightness map
-  - AShapeC. Input: BW CPD-contrast map
+  - ASegmC. Input: BW CPD-contrast map
 
   - ACanny. Input: BW edges/lines (PyraCanny model, 1px white lines)
   - ALineA. Input: BW edges/lines (MistoLine model, white lines)
