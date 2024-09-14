@@ -867,13 +867,13 @@ def downloading_sdxl_lcm_lora():
     return modules.flags.PerformanceLoRA.EXTREME_SPEED.value
 
 
-def downloading_sdxl_lightning_lora():
-    load_file_from_url(
-        url='https://huggingface.co/mashb1t/misc/resolve/main/sdxl_lightning_4step_lora.safetensors',
-        model_dir=paths_loras[0],
-        file_name=modules.flags.PerformanceLoRA.LIGHTNING.value
-    )
-    return modules.flags.PerformanceLoRA.LIGHTNING.value
+# def downloading_sdxl_lightning_lora():
+#     load_file_from_url(
+#         url='https://huggingface.co/mashb1t/misc/resolve/main/sdxl_lightning_4step_lora.safetensors',
+#         model_dir=paths_loras[0],
+#         file_name=modules.flags.PerformanceLoRA.LIGHTNING.value
+#     )
+#     return modules.flags.PerformanceLoRA.LIGHTNING.value
 
 
 def downloading_sdxl_hyper_sd_lora():

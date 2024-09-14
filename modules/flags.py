@@ -152,7 +152,7 @@ class PerformanceLoRA(Enum):
     QUALITY = None
     SPEED = None
     EXTREME_SPEED = 'sdxl_lcm_lora.safetensors'
-    LIGHTNING = 'sdxl_lightning_4step_lora.safetensors'
+    # LIGHTNING = 'sdxl_lightning_4step_lora.safetensors'
     HYPER_SD = 'sdxl_hyper_sd_4step_lora.safetensors'
 
 
@@ -160,7 +160,7 @@ class Steps(IntEnum):
     QUALITY = 60
     SPEED = 30
     EXTREME_SPEED = 8
-    LIGHTNING = 4
+    # LIGHTNING = 4
     HYPER_SD = 4
 
     @classmethod
@@ -172,7 +172,7 @@ class StepsUOV(IntEnum):
     QUALITY = 36
     SPEED = 18
     EXTREME_SPEED = 8
-    LIGHTNING = 4
+    # LIGHTNING = 4
     HYPER_SD = 4
 
 
@@ -180,7 +180,7 @@ class Performance(Enum):
     QUALITY = 'Quality'
     SPEED = 'Speed'
     EXTREME_SPEED = 'Extreme Speed'
-    LIGHTNING = 'Lightning'
+    # LIGHTNING = 'Lightning'
     HYPER_SD = 'Hyper-SD'
 
     @classmethod
@@ -199,7 +199,8 @@ class Performance(Enum):
     def has_restricted_features(cls, x) -> bool:
         if isinstance(x, Performance):
             x = x.value
-        return x in [cls.EXTREME_SPEED.value, cls.LIGHTNING.value, cls.HYPER_SD.value]
+        # return x in [cls.EXTREME_SPEED.value, cls.LIGHTNING.value, cls.HYPER_SD.value]
+        return x in [cls.EXTREME_SPEED.value, cls.HYPER_SD.value]
 
     def steps(self) -> int | None:
         return Steps[self.name].value if self.name in Steps.__members__ else None

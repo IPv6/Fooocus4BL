@@ -881,25 +881,25 @@ def worker():
         async_task.adm_scaler_end = 0.0
         return current_progress
 
-    def set_lightning_defaults(async_task, current_progress, advance_progress=False):
-        print('Enter Lightning mode.')
-        if advance_progress:
-            current_progress += 1
-        progressbar(async_task, 1, 'Downloading Lightning components ...')
-        async_task.performance_loras += [(modules.config.downloading_sdxl_lightning_lora(), 1.0)]
-        if async_task.refiner_model_name != 'None':
-            print(f'Refiner disabled in Lightning mode.')
-        async_task.refiner_model_name = 'None'
-        async_task.sampler_name = 'euler'
-        async_task.scheduler_name = 'sgm_uniform'
-        async_task.sharpness = 0.0
-        async_task.cfg_scale = 1.0
-        async_task.adaptive_cfg = 1.0
-        async_task.refiner_switch = 1.0
-        async_task.adm_scaler_positive = 1.0
-        async_task.adm_scaler_negative = 1.0
-        async_task.adm_scaler_end = 0.0
-        return current_progress
+    # def set_lightning_defaults(async_task, current_progress, advance_progress=False):
+    #     print('Enter Lightning mode.')
+    #     if advance_progress:
+    #         current_progress += 1
+    #     progressbar(async_task, 1, 'Downloading Lightning components ...')
+    #     async_task.performance_loras += [(modules.config.downloading_sdxl_lightning_lora(), 1.0)]
+    #     if async_task.refiner_model_name != 'None':
+    #         print(f'Refiner disabled in Lightning mode.')
+    #     async_task.refiner_model_name = 'None'
+    #     async_task.sampler_name = 'euler'
+    #     async_task.scheduler_name = 'sgm_uniform'
+    #     async_task.sharpness = 0.0
+    #     async_task.cfg_scale = 1.0
+    #     async_task.adaptive_cfg = 1.0
+    #     async_task.refiner_switch = 1.0
+    #     async_task.adm_scaler_positive = 1.0
+    #     async_task.adm_scaler_negative = 1.0
+    #     async_task.adm_scaler_end = 0.0
+    #     return current_progress
 
     def set_lcm_defaults(async_task, current_progress, advance_progress=False):
         print('Enter LCM mode.')
@@ -1166,8 +1166,8 @@ def worker():
         current_progress = 0
         if async_task.performance_selection == Performance.EXTREME_SPEED:
             set_lcm_defaults(async_task, current_progress, advance_progress=True)
-        elif async_task.performance_selection == Performance.LIGHTNING:
-            set_lightning_defaults(async_task, current_progress, advance_progress=True)
+        # elif async_task.performance_selection == Performance.LIGHTNING:
+        #     set_lightning_defaults(async_task, current_progress, advance_progress=True)
         elif async_task.performance_selection == Performance.HYPER_SD:
             set_hyper_sd_defaults(async_task, current_progress, advance_progress=True)
 

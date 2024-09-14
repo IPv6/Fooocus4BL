@@ -87,7 +87,7 @@ class TestUtils(unittest.TestCase):
         lora_filenames = [
             'hey-lora.safetensors',
             modules.flags.PerformanceLoRA.EXTREME_SPEED.value,
-            modules.flags.PerformanceLoRA.LIGHTNING.value,
+            # modules.flags.PerformanceLoRA.LIGHTNING.value,
             os.path.join('subfolder', modules.flags.PerformanceLoRA.HYPER_SD.value)
         ]
 
@@ -113,13 +113,13 @@ class TestUtils(unittest.TestCase):
                     'some prompt'
                 ),
             },
-            {
-                "input": ("some prompt, <lora:sdxl_lightning_4step_lora:1>, <lora:hey-lora:0.4>", [], 5, True, modules.flags.Performance.LIGHTNING),
-                "output": (
-                    [('hey-lora.safetensors', 0.4)],
-                    'some prompt'
-                ),
-            },
+            # {
+            #     "input": ("some prompt, <lora:sdxl_lightning_4step_lora:1>, <lora:hey-lora:0.4>", [], 5, True, modules.flags.Performance.LIGHTNING),
+            #     "output": (
+            #         [('hey-lora.safetensors', 0.4)],
+            #         'some prompt'
+            #     ),
+            # },
             {
                 "input": ("some prompt, <lora:sdxl_hyper_sd_4step_lora:1>, <lora:hey-lora:0.4>", [], 5, True, modules.flags.Performance.HYPER_SD),
                 "output": (
