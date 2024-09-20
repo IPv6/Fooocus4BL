@@ -407,6 +407,11 @@ with shared.gradio_root:
                             pea_to_vary_button = gr.Button(label="Pea->Upscale/Vary", value="Pea->Upscale/Vary", variant='secondary', elem_classes='type_row', elem_id='pea_to_vary_button', visible=True)
                             pea_to_inpaint_button = gr.Button(label="Pea->Inpaint/Outpaint", value="Pea->Inpaint/Outpaint", variant='secondary', elem_classes='type_row', elem_id='pea_to_inpaint_button', visible=True)
                         with gr.Row():
+                            cn1_to_pea_button = gr.Button(label="Image Prompt #1->Pea", value="Image Prompt #1->Pea", elem_classes='type_row_half', elem_id='cn1_to_pea_button', visible=True)
+                            cn2_to_pea_button = gr.Button(label="Image Prompt #2->Pea", value="Image Prompt #2->Pea", elem_classes='type_row_half', elem_id='cn2_to_pea_button', visible=True)
+                            cn3_to_pea_button = gr.Button(label="Image Prompt #3->Pea", value="Image Prompt #3->Pea", elem_classes='type_row_half', elem_id='cn3_to_pea_button', visible=True)
+                            cn4_to_pea_button = gr.Button(label="Image Prompt #4->Pea", value="Image Prompt #4->Pea", elem_classes='type_row_half', elem_id='cn4_to_pea_button', visible=True)
+                        with gr.Row():
                             pea_to_cn1_button = gr.Button(label="Pea->Image Prompt #1", value="Pea->Image Prompt #1", elem_classes='type_row_half', elem_id='pea_to_cn1_button', visible=True)
                             pea_to_cn2_button = gr.Button(label="Pea->Image Prompt #2", value="Pea->Image Prompt #2", elem_classes='type_row_half', elem_id='pea_to_cn2_button', visible=True)
                             pea_to_cn3_button = gr.Button(label="Pea->Image Prompt #3", value="Pea->Image Prompt #3", elem_classes='type_row_half', elem_id='pea_to_cn3_button', visible=True)

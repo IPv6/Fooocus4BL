@@ -18,14 +18,14 @@ function onPhotopeaLoaded(iframe) {
         let progress_gallery = document.getElementsByClassName("image_gallery");
         if(!progress_gallery || progress_gallery.length < 1){return;}
         let g_images = progress_gallery[0].querySelectorAll("img");
-        let outgoingImg = g_images[0];
+        let outgoingImg = g_images?g_images[0]:null;
         openImageInPhotopea(outgoingImg);
     })
     gradioApp().getElementById("pea_from_gal2_button").addEventListener('click', (event) => {
         let progress_gallery = document.getElementsByClassName("image_gallery");
         if(!progress_gallery || progress_gallery.length < 1){return;}
         let g_images = progress_gallery[0].querySelectorAll("img");
-        let outgoingImg = g_images[1];
+        let outgoingImg = g_images?g_images[1]:null;
         openImageInPhotopea(outgoingImg)
     })
     gradioApp().getElementById("pea_to_vary_button").addEventListener('click', (event) => {
@@ -34,6 +34,28 @@ function onPhotopeaLoaded(iframe) {
     gradioApp().getElementById("pea_to_inpaint_button").addEventListener('click', (event) => {
         getAndSendImageToWebUITab(switchToInpaintWithImage);
     })
+
+    gradioApp().getElementById("cn1_to_pea_button").addEventListener('click', (event) => {
+        const g_images = gradioApp().getElementById(elem_id_cns[0])?.querySelectorAll("img");
+        let outgoingImg = g_images?g_images[0]:null;
+        openImageInPhotopea(outgoingImg)
+    })
+    gradioApp().getElementById("cn2_to_pea_button").addEventListener('click', (event) => {
+        const g_images = gradioApp().getElementById(elem_id_cns[1])?.querySelectorAll("img");
+        let outgoingImg = g_images?g_images[0]:null;
+        openImageInPhotopea(outgoingImg)
+    })
+    gradioApp().getElementById("cn3_to_pea_button").addEventListener('click', (event) => {
+        const g_images = gradioApp().getElementById(elem_id_cns[2])?.querySelectorAll("img");
+        let outgoingImg = g_images?g_images[0]:null;
+        openImageInPhotopea(outgoingImg)
+    })
+    gradioApp().getElementById("cn4_to_pea_button").addEventListener('click', (event) => {
+        const g_images = gradioApp().getElementById(elem_id_cns[3])?.querySelectorAll("img");
+        let outgoingImg = g_images?g_images[0]:null;
+        openImageInPhotopea(outgoingImg)
+    })
+
     gradioApp().getElementById("pea_to_cn1_button").addEventListener('click', (event) => {
         getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[0]) );
     })
@@ -46,6 +68,7 @@ function onPhotopeaLoaded(iframe) {
     gradioApp().getElementById("pea_to_cn4_button").addEventListener('click', (event) => {
         getAndSendImageToWebUITab( (img_file) => switchToCNWithImage(img_file, elem_id_cns[3]) );
     })
+
     // // Listen to the size slider changes.
     // gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
     //     // Get the value of the slider and parse it as an integer
