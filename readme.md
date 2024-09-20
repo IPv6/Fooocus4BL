@@ -7,11 +7,11 @@
   - ALightQ. Input: BW lightness map
   - ASegmC. Input: BW CPD-contrast map
 
-  - ACanny. Input: BW edges/lines (PyraCanny model, 1px white lines)
+  - ACannyP. Input: BW edges/lines (PyraCanny model, 1px white lines)
   - ALineA. Input: BW edges/lines (MistoLine model, white lines)
 
-  - ARecolor. Input: Colored map
-  - AImageP. Input: Image prompt
+  - ARecolorC. Input: Colored image reference
+  - ATileP. Input: Colored tile reference
 
   - **Extra ControNets specifics:**
   - inputs are not preprocessed at all. content must conform to controlnet behaviour
@@ -25,5 +25,4 @@
 
 * Minor improvements
   - Alternative upscaler: https://openmodeldb.info/models/4x-realesrgan-x4plus-anime-6b
-  - Alternative upscaler: https://openmodeldb.info/models/2x-realesrganv2-animevideo-xsx2
   - Safety checks

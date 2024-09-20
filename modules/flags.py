@@ -84,23 +84,23 @@ default_parameters = {
 
 # Fooocus4BL: flags and defaults declaration
 cn_adepthF = "ADepthF"
-cn_arecolor = "ARecolor"
+cn_arecolorC = "ARecolorC"
 cn_alightQ = "ALightQ"
-cn_asegmc = "ASegmC"
-cn_acanny = "ACanny"
+cn_asegmC = "ASegmC"
+cn_acannyP = "ACannyP"
 cn_alineA = "ALineA"
-cn_aimageP = "AImageP"
-ip_list = ip_list + [cn_adepthF, cn_alineA, cn_acanny, cn_alightQ, cn_asegmc, cn_arecolor, cn_aimageP]
+cn_atileP = "ATileP"
+ip_list = ip_list + [cn_adepthF, cn_alineA, cn_acannyP, cn_asegmC, cn_alightQ, cn_arecolorC, cn_atileP]
 default_parameters[cn_adepthF] = (0.33, 0.33)
 default_parameters[cn_alineA] = (0.33, 0.33)
-default_parameters[cn_acanny] = (0.33, 0.33)
+default_parameters[cn_acannyP] = (0.33, 0.33)
 default_parameters[cn_alightQ] = (0.33, 0.33)
-default_parameters[cn_asegmc] = (0.33, 0.33)
-default_parameters[cn_arecolor] = (0.33, 0.33)
-default_parameters[cn_aimageP] = (0.33, 0.33)
+default_parameters[cn_asegmC] = (0.33, 0.33)
+default_parameters[cn_arecolorC] = (0.33, 0.33)
+default_parameters[cn_atileP] = (0.33, 0.33)
 upscale_fast_anime6b = 'Upscale Anime6B (Fast 2x)'
 upscale_fast_xsx2 = 'Upscale xsx2 (Fast 2x)'
-uov_list = uov_list+[upscale_fast_anime6b, upscale_fast_xsx2]
+uov_list = uov_list+[upscale_fast_anime6b] #+[upscale_fast_xsx2]
 
 output_formats = ['png', 'jpeg', 'webp']
 
