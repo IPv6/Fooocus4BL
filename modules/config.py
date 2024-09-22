@@ -928,9 +928,9 @@ def downloading_controlnet_alight(): # Fooocus4BL: model preloading cn_alightQ
         # url='https://huggingface.co/Nacholmo/controlnet-qr-pattern-sdxl/resolve/main/diffusion_pytorch_model.safetensors', # 5Gb # same as monster-labs
         url='https://huggingface.co/r3gm/controlnet-qr-pattern-sdxl-fp16/resolve/main/diffusion_pytorch_model.fp16.safetensors',  # 2.3Gb
         model_dir=path_controlnet,
-        file_name='control_sdxl_qrcode_monster.safetensors'
+        file_name='control_sdxl_lightq.safetensors'
     )
-    return os.path.join(path_controlnet, 'control_sdxl_qrcode_monster.safetensors')
+    return os.path.join(path_controlnet, 'control_sdxl_lightq.safetensors')
 def downloading_controlnet_alinea(): # Fooocus4BL: model preloading cn_alineA
     load_file_from_url(
         # url='https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/sargezt_xl_softedge.safetensors',
